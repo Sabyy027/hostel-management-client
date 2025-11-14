@@ -1,14 +1,20 @@
+// src/App.jsx
+
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import HomePage from '../pages/HomePage.jsx';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Signup from './pages/Signup';
+import Login from './pages/Login';
 
 function App() {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<Navigate to="/signup" />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
