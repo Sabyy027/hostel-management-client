@@ -1,6 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+
 function Signup() {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Signup Form Data:', { username, email, password });
+  };
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-900 px-6">
       <div className="w-full max-w-md rounded-lg bg-gray-800 p-8 shadow-lg">
@@ -8,8 +18,7 @@ function Signup() {
           Create Your Account
         </h2>
         
-        <form className="space-y-6">
-          {/* Username Field */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
             <label 
               htmlFor="username" 
@@ -23,10 +32,11 @@ function Signup() {
               className="w-full rounded-lg border border-gray-600 bg-gray-700 p-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
               placeholder="johndoe"
               required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
 
-          {/* Email Field */}
           <div>
             <label 
               htmlFor="email" 
@@ -40,10 +50,11 @@ function Signup() {
               className="w-full rounded-lg border border-gray-600 bg-gray-700 p-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
               placeholder="john@example.com"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
 
-          {/* Password Field */}
           <div>
             <label 
               htmlFor="password" 
@@ -57,10 +68,11 @@ function Signup() {
               className="w-full rounded-lg border border-gray-600 bg-gray-700 p-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
               placeholder="••••••••"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {/* Signup Button */}
           <button
             type="submit"
             className="w-full rounded-lg bg-blue-600 px-5 py-3 text-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
