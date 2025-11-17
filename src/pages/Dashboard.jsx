@@ -26,38 +26,64 @@ function Dashboard() {
 
         {/* 2. Conditional Links */}
         <div className="space-y-4">
+          {/* --- ADMIN VIEW --- */}
           {user.role === "admin" ? (
             <>
-              {/* --- Admin Links --- */}
+              <Link
+                to="/rooms"
+                className="block w-full rounded-lg bg-blue-600 px-5 py-3 text-base font-medium text-white hover:bg-blue-700"
+              >
+                Manage Rooms
+              </Link>
+              <Link
+                to="/admin/occupancy"
+                className="block w-full rounded-lg bg-green-600 px-5 py-3 text-base font-medium text-white hover:bg-green-700"
+              >
+                Occupancy Dashboard
+              </Link>
               <Link
                 to="/admin/structure"
                 className="block w-full rounded-lg bg-purple-600 px-5 py-3 text-base font-medium text-white hover:bg-purple-700"
               >
-                Hostel Builder (Manage Blocks)
+                Hostel Structure (Blocks)
+              </Link>
+
+              {/* --- NEW BUTTONS --- */}
+              <Link
+                to="/admin/staff"
+                className="block w-full rounded-lg bg-indigo-600 px-5 py-3 text-base font-medium text-white hover:bg-indigo-700"
+              >
+                Manage Staff
               </Link>
               <Link
-  to="/admin/occupancy"
-  className="block w-full rounded-lg bg-green-600 px-5 py-3 text-base font-medium text-white hover:bg-green-700"
->
-  Occupancy Dashboard
-</Link>
-              
-              {/* We'll add /manage-students later */}
+                to="/admin/maintenance"
+                className="block w-full rounded-lg bg-red-600 px-5 py-3 text-base font-medium text-white hover:bg-red-700"
+              >
+                Maintenance Desk
+              </Link>
             </>
           ) : (
+            /* --- STUDENT VIEW --- */
             <>
-              {/* --- Student Links --- */}
               <Link
-                to="/my-profile" // We will create this page next
+                to="/my-profile"
                 className="block w-full rounded-lg bg-blue-600 px-5 py-3 text-base font-medium text-white hover:bg-blue-700"
               >
                 My Profile
               </Link>
               <Link
-                to="/my-booking" // We will create this page later
+                to="/my-booking"
                 className="block w-full rounded-lg bg-gray-600 px-5 py-3 text-base font-medium text-white hover:bg-gray-700"
               >
-                My Booking
+                My Booking / Room
+              </Link>
+
+              {/* --- NEW BUTTON --- */}
+              <Link
+                to="/student/complaints"
+                className="block w-full rounded-lg bg-red-600 px-5 py-3 text-base font-medium text-white hover:bg-red-700"
+              >
+                Raise Complaint / Maintenance
               </Link>
             </>
           )}

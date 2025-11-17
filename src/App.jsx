@@ -11,6 +11,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import HostelManager from "./pages/admin/HostelManager";
 import OccupancyDashboard from "./pages/admin/OccupancyDashboard";
+import StaffManager from "./pages/admin/StaffManager";
+import MaintenanceAdmin from "./pages/admin/MaintenanceAdmin";
+import RaiseComplaint from "./pages/student/RaiseComplaint";
 
 function App() {
   return (
@@ -70,6 +73,33 @@ function App() {
               {" "}
               <OccupancyDashboard />{" "}
             </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/staff"
+          element={
+            <AdminRoute>
+              <StaffManager />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/maintenance"
+          element={
+            <AdminRoute>
+              <MaintenanceAdmin />
+            </AdminRoute>
+          }
+        />
+
+        {/* STUDENT ROUTES */}
+        <Route
+          path="/student/complaints"
+          element={
+            <ProtectedRoute>
+              <RaiseComplaint />
+            </ProtectedRoute>
           }
         />
       </Routes>
