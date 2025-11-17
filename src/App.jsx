@@ -1,15 +1,16 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
-import Signup from './pages/Signup';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
-import MyBooking from './pages/MyBooking'; // <-- 1. Import
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import MyBooking from "./pages/MyBooking"; // <-- 1. Import
 
-import ProtectedRoute from './components/ProtectedRoute';
-import AdminRoute from './components/AdminRoute';
-import HostelManager from './pages/admin/HostelManager';
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import HostelManager from "./pages/admin/HostelManager";
+import OccupancyDashboard from "./pages/admin/OccupancyDashboard";
 
 function App() {
   return (
@@ -19,30 +20,58 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        
+
         {/* --- Protected Route (for ALL users) --- */}
-        <Route 
-          path="/dashboard" 
-          element={ <ProtectedRoute> <Dashboard /> </ProtectedRoute> } 
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              {" "}
+              <Dashboard />{" "}
+            </ProtectedRoute>
+          }
         />
-        
+
         {/* --- Admin-Only Route --- */}
-        
-        
+
         {/* --- Student-Only Routes (for now, accessible by all logged-in) --- */}
-        <Route 
+        <Route
           path="/my-profile"
-          element={ <ProtectedRoute> <Profile /> </ProtectedRoute> }
+          element={
+            <ProtectedRoute>
+              {" "}
+              <Profile />{" "}
+            </ProtectedRoute>
+          }
         />
-        <Route 
+        <Route
           path="/my-booking"
-          element={ <ProtectedRoute> <MyBooking /> </ProtectedRoute> } 
+          element={
+            <ProtectedRoute>
+              {" "}
+              <MyBooking />{" "}
+            </ProtectedRoute>
+          }
         />
-        <Route 
-          path="/admin/structure" 
-          element={ <AdminRoute> <HostelManager /> </AdminRoute> } 
+        <Route
+          path="/admin/structure"
+          element={
+            <AdminRoute>
+              {" "}
+              <HostelManager />{" "}
+            </AdminRoute>
+          }
         />
-  
+
+        <Route
+          path="/admin/occupancy"
+          element={
+            <AdminRoute>
+              {" "}
+              <OccupancyDashboard />{" "}
+            </AdminRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

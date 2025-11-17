@@ -1,0 +1,167 @@
+import React, { useState, useEffect } from 'react';
+import apiClient from '../../api/axios';
+
+function OccupancyDashboard() {
+  const [structure, setStructure] = useState([]);
+  const [activeBlockId, setActiveBlockId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Modal State
+  const [selectedRoom, setSelectedRoom] = useState(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const res = await apiClient.get('/rooms/structure');
+      setStructure(res.data);
+      if (res.data.length > 0 && !activeBlockId) {
+        setActiveBlockId(res.data[0]._id);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchData(); }, []);
+
+  const getActiveBlockData = () => structure.find(b => b._id === activeBlockId);
+
+  // --- HELPER: Status Color ---
+  const getRoomColor = (room) => {
+    if (room.isStaffRoom) return 'bg-purple-900/50 border-purple-500 text-purple-200';
+    if (room.isOccupied) return 'bg-red-900/50 border-red-500 text-red-200';
+    return 'bg-green-900/50 border-green-500 text-green-200';
+  };
+
+  return (
+    <div className="container mx-auto p-6 text-white min-h-screen relative">
+      <h1 className="text-3xl font-bold mb-6">Occupancy Dashboard</h1>
+
+      {/* --- LEGEND --- */}
+      <div className="flex gap-4 mb-6 text-sm">
+        <div className="flex items-center gap-2"><span className="w-3 h-3 bg-green-500 rounded-full"></span> Available</div>
+        <div className="flex items-center gap-2"><span className="w-3 h-3 bg-red-500 rounded-full"></span> Occupied</div>
+        <div className="flex items-center gap-2"><span className="w-3 h-3 bg-purple-500 rounded-full"></span> Staff</div>
+      </div>
+
+      {/* --- BLOCK TABS --- */}
+      <div className="mb-6 flex space-x-2 overflow-x-auto pb-2">
+        {structure.map(block => (
+          <button
+            key={block._id}
+            onClick={() => setActiveBlockId(block._id)}
+            className={`px-6 py-3 font-bold rounded transition ${
+              activeBlockId === block._id ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            }`}
+          >
+            {block.name}
+          </button>
+        ))}
+      </div>
+
+      {/* --- MAIN CONTENT --- */}
+      {getActiveBlockData() ? (
+        <div className="space-y-6 animate-fade-in">
+          {getActiveBlockData().floors.map(floor => (
+            <div key={floor._id} className="rounded-lg p-5 shadow-lg border border-gray-700 bg-gray-800">
+              <div className="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
+                <h3 className="text-xl font-bold text-white">{floor.name}</h3>
+                <span className="text-xs text-gray-400 uppercase">{floor.type} Floor</span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {floor.rooms.map(room => (
+                  <div 
+                    key={room._id} 
+                    onClick={() => setSelectedRoom(room)}
+                    className={`relative p-4 rounded-lg text-center transition border cursor-pointer hover:scale-105 shadow-md ${getRoomColor(room)}`}
+                  >
+                    <div className="text-lg font-bold">{room.roomNumber}</div>
+                    <div className="text-xs opacity-80 mb-2">
+                      {room.isStaffRoom ? (room.staffRole || 'Staff') : `${room.occupants.length}/${room.capacity} Filled`}
+                    </div>
+                    
+                    {/* Tiny indicator icons */}
+                    <div className="flex justify-center gap-1 mt-1">
+                      {room.bathroomType === 'Attached' && <span title="Attached Bath">🚿</span>}
+                      {room.type === 'AC' && <span title="AC">❄️</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-gray-500 mt-20">No Data Available</div>
+      )}
+
+      {/* --- RESIDENT DETAILS MODAL --- */}
+      {selectedRoom && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={() => setSelectedRoom(null)}>
+          <div className="bg-gray-900 border border-gray-700 rounded-xl p-6 max-w-md w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-white">Room {selectedRoom.roomNumber}</h2>
+                <p className="text-gray-400 text-sm">{selectedRoom.type} | {selectedRoom.bathroomType} Bath</p>
+              </div>
+              <button onClick={() => setSelectedRoom(null)} className="text-gray-500 hover:text-white text-2xl">&times;</button>
+            </div>
+
+            {/* STAFF VIEW */}
+            {selectedRoom.isStaffRoom && (
+               <div className="bg-purple-900/30 p-4 rounded border border-purple-500/50">
+                 <h3 className="font-bold text-purple-300 mb-2">Staff Room</h3>
+                 <p>Role: {selectedRoom.staffRole}</p>
+                 {selectedRoom.otherStaffDetails && <p>Details: {selectedRoom.otherStaffDetails}</p>}
+               </div>
+            )}
+
+            {/* STUDENT VIEW */}
+            {!selectedRoom.isStaffRoom && (
+              <>
+                <h3 className="font-bold text-blue-400 mb-3 uppercase text-xs tracking-wider">Current Residents</h3>
+                
+                {selectedRoom.occupants && selectedRoom.occupants.length > 0 ? (
+                  <div className="space-y-3">
+                    {selectedRoom.occupants.map(user => (
+                      <div key={user._id} className="flex items-center gap-3 bg-gray-800 p-3 rounded border border-gray-700">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-bold text-white">
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="font-bold text-white">{user.username}</p>
+                          <p className="text-xs text-gray-400">{user.email}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">This room is currently empty.</p>
+                )}
+
+                <div className="mt-6 pt-4 border-t border-gray-800 flex justify-between text-sm">
+                  <span className="text-gray-400">Capacity:</span>
+                  <span className="text-white">{selectedRoom.occupants.length} / {selectedRoom.capacity}</span>
+                </div>
+              </>
+            )}
+
+            <button 
+              onClick={() => setSelectedRoom(null)}
+              className="w-full mt-6 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+export default OccupancyDashboard;

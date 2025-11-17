@@ -35,6 +35,13 @@ function Dashboard() {
               >
                 Hostel Builder (Manage Blocks)
               </Link>
+              <Link
+  to="/admin/occupancy"
+  className="block w-full rounded-lg bg-green-600 px-5 py-3 text-base font-medium text-white hover:bg-green-700"
+>
+  Occupancy Dashboard
+</Link>
+              
               {/* We'll add /manage-students later */}
             </>
           ) : (
