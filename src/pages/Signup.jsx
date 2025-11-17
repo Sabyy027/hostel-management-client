@@ -1,14 +1,58 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; 
+import axios from 'axios'; // <-- 2. Import axios
 
 function Signup() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Signup Form Data:', { username, email, password });
+  // 3. Add loading and error states
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const navigate = useNavigate(); // 4. Get the navigate function
+
+  // 5. Make the submit handler async
+  const handleSubmit = async (e) => {
+    e.preventDefault(); 
+    setError(null); // Clear previous errors
+    setLoading(true); // Start loading
+
+    // This is the data we'll send to the server
+    const signupData = { username, email, password };
+
+    try {
+      // 6. Send the POST request to your backend
+      const response = await axios.post(
+        'http://localhost:4000/api/auth/signup', // Your backend API URL
+        signupData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      // 7. Handle success
+      console.log('Signup successful:', response.data);
+      setLoading(false);
+      
+      // Navigate to the login page on success
+      navigate('/login');
+
+    } catch (err) {
+      // 8. Handle errors
+      console.error('Signup error:', err);
+      setLoading(false);
+      
+      // Set the error message from the server's response
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Signup failed. Please try again.');
+      }
+    }
   };
 
   return (
@@ -19,6 +63,7 @@ function Signup() {
         </h2>
         
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* ... (Username and Email fields - no changes) ... */}
           <div>
             <label 
               htmlFor="username" 
@@ -73,11 +118,21 @@ function Signup() {
             />
           </div>
 
+
+          {/* 9. Show error message if it exists */}
+          {error && (
+            <p className="text-center text-sm text-red-400">
+              {error}
+            </p>
+          )}
+
+          {/* 10. Disable button and show text while loading */}
           <button
             type="submit"
-            className="w-full rounded-lg bg-blue-600 px-5 py-3 text-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-800"
+            className="w-full rounded-lg bg-blue-600 px-5 py-3 text-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-800 disabled:opacity-50"
+            disabled={loading} // Disable button when loading
           >
-            Sign Up
+            {loading ? 'Signing Up...' : 'Sign Up'}
           </button>
         </form>
 
