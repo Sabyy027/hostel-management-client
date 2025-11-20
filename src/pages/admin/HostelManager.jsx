@@ -137,48 +137,155 @@ function CreateBlockWizard({ onBlockCreated }) {
 
 // --- ( 2 ) ADD ROOM FORM ---
 function AddRoomForm({ floor, onRoomAdded }) {
+  const [isBulkMode, setIsBulkMode] = useState(false); // Toggle state
+
   const formik = useFormik({
-    initialValues: { roomNumber: '', capacity: 4, pricePerYear: 50000, isStaffRoom: false, staffRole: 'RT', otherStaffDetails: '' },
-    validationSchema: Yup.object({ roomNumber: Yup.string().required() }),
+    initialValues: { 
+      roomNumber: '',       // For Single Mode
+      startNumber: '',      // For Bulk Mode
+      endNumber: '',        // For Bulk Mode
+      capacity: 4, 
+      pricingPlans: [{ duration: 12, unit: 'months', price: 50000 }],
+      isStaffRoom: false, 
+      staffRole: 'RT', 
+      otherStaffDetails: '' 
+    },
+    // Validation schema changes based on mode
+    validationSchema: Yup.object().shape(
+      isBulkMode 
+        ? {
+            startNumber: Yup.number().required('Start required'),
+            endNumber: Yup.number().required('End required')
+          }
+        : {
+            roomNumber: Yup.string().required('Room No required')
+          }
+    ),
     onSubmit: async (values, { resetForm }) => {
       try {
-        // Auto-inherit floor type
-        const roomData = { ...values, type: floor.type, floorId: floor._id };
-        await apiClient.post('/rooms/add', roomData);
+        const baseData = { 
+          ...values, 
+          type: floor.type, 
+          floorId: floor._id 
+        };
+
+        if (isBulkMode) {
+          await apiClient.post('/rooms/bulk-create', baseData);
+        } else {
+          await apiClient.post('/rooms/add', baseData);
+        }
+        
         onRoomAdded();
         resetForm();
-      } catch (err) { alert(err.response?.data?.message || 'Error'); }
+        alert(isBulkMode ? 'Bulk Rooms Created!' : 'Room Created!');
+      } catch (err) { 
+        alert(err.response?.data?.message || 'Error'); 
+      }
     }
   });
 
+  // Helper to add a new empty plan row
+  const addPlan = () => {
+    const newPlans = [...formik.values.pricingPlans, { duration: 6, unit: 'months', price: 0 }];
+    formik.setFieldValue('pricingPlans', newPlans);
+  };
+
+  // Helper to remove a plan row
+  const removePlan = (index) => {
+    if (formik.values.pricingPlans.length === 1) return;
+    const newPlans = formik.values.pricingPlans.filter((_, i) => i !== index);
+    formik.setFieldValue('pricingPlans', newPlans);
+  };
+
   return (
     <div className="rounded bg-gray-800 p-4 shadow-inner mt-4">
-      <h4 className="text-sm font-bold text-blue-300 mb-3 flex items-center justify-between">
-        <span>Add Room</span>
-        <span className="text-[10px] bg-gray-700 px-2 py-1 rounded text-gray-300">{floor.type === 'AC' ? 'Attached Bath' : 'Common Bath'}</span>
-      </h4>
+      <div className="flex justify-between items-center mb-4">
+        <h4 className="text-sm font-bold text-blue-300">
+          {isBulkMode ? `Bulk Add to ${floor.name}` : `Add Room to ${floor.name}`}
+        </h4>
+        
+        {/* TOGGLE BUTTON */}
+        <button 
+          type="button"
+          onClick={() => setIsBulkMode(!isBulkMode)}
+          className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition"
+        >
+          {isBulkMode ? 'Switch to Single' : 'Switch to Bulk'}
+        </button>
+      </div>
+      
       <form onSubmit={formik.handleSubmit} className="space-y-3">
-        <div className="grid grid-cols-2 gap-2">
-          <input type="text" placeholder="Room No" {...formik.getFieldProps('roomNumber')} className="w-full rounded bg-gray-700 p-2 text-sm"/>
-          <input type="number" placeholder="Price" {...formik.getFieldProps('pricePerYear')} className="w-full rounded bg-gray-700 p-2 text-sm"/>
-        </div>
+        
+        {/* DYNAMIC INPUTS */}
+        {isBulkMode ? (
+          <div className="grid grid-cols-2 gap-2 animate-fade-in">
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">Start No.</label>
+              <input type="number" {...formik.getFieldProps('startNumber')} className="w-full rounded bg-gray-700 p-2 text-sm placeholder-gray-500" placeholder="101"/>
+            </div>
+            <div>
+              <label className="text-xs text-gray-400 block mb-1">End No.</label>
+              <input type="number" {...formik.getFieldProps('endNumber')} className="w-full rounded bg-gray-700 p-2 text-sm placeholder-gray-500" placeholder="110"/>
+            </div>
+          </div>
+        ) : (
+          <div className="animate-fade-in">
+             <input type="text" placeholder="Room Number (e.g. 101)" {...formik.getFieldProps('roomNumber')} className="w-full rounded bg-gray-700 p-2 text-sm"/>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 gap-2">
           <select {...formik.getFieldProps('capacity')} className="w-full rounded bg-gray-700 p-2 text-sm">
             {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} Sharing</option>)}
           </select>
         </div>
+
+        {/* --- PRICING PLANS UI --- */}
+        <div className="bg-gray-700 p-2 rounded">
+          <label className="text-xs text-gray-400 font-bold mb-2 block">Pricing Plans</label>
+          {formik.values.pricingPlans.map((plan, index) => (
+            <div key={index} className="flex gap-2 mb-2">
+              <input 
+                type="number" placeholder="Dur" 
+                value={plan.duration}
+                onChange={e => formik.setFieldValue(`pricingPlans[${index}].duration`, e.target.value)}
+                className="w-1/4 rounded bg-gray-600 p-1 text-sm" 
+              />
+              <select 
+                value={plan.unit}
+                onChange={e => formik.setFieldValue(`pricingPlans[${index}].unit`, e.target.value)}
+                className="w-1/3 rounded bg-gray-600 p-1 text-sm"
+              >
+                <option value="months">Months</option>
+                <option value="year">Year</option>
+              </select>
+              <input 
+                type="number" placeholder="Price" 
+                value={plan.price}
+                onChange={e => formik.setFieldValue(`pricingPlans[${index}].price`, e.target.value)}
+                className="w-1/3 rounded bg-gray-600 p-1 text-sm" 
+              />
+              {formik.values.pricingPlans.length > 1 && (
+                <button type="button" onClick={() => removePlan(index)} className="text-red-400 font-bold">&times;</button>
+              )}
+            </div>
+          ))}
+          <button type="button" onClick={addPlan} className="text-xs text-blue-300 hover:text-white">+ Add another plan</button>
+        </div>
+        {/* ------------------------ */}
+
         <div className="rounded bg-gray-700 p-2 space-y-2">
           <div className="flex items-center space-x-2"><input type="checkbox" name="isStaffRoom" checked={formik.values.isStaffRoom} onChange={formik.handleChange} className="h-4 w-4"/><span>Staff Room</span></div>
           {formik.values.isStaffRoom && (
-            <>
-              <select {...formik.getFieldProps('staffRole')} className="w-full rounded bg-gray-600 p-2 text-sm">
-                <option value="RT">Resident Tutor</option><option value="Warden">Warden</option><option value="Other">Other</option>
-              </select>
-              {formik.values.staffRole === 'Other' && <input type="text" placeholder="Role" {...formik.getFieldProps('otherStaffDetails')} className="w-full rounded bg-gray-600 p-2 text-sm"/>}
-            </>
+            <select {...formik.getFieldProps('staffRole')} className="w-full rounded bg-gray-600 p-2 text-sm">
+              <option value="RT">Resident Tutor</option><option value="Warden">Warden</option><option value="Other">Other</option>
+            </select>
           )}
         </div>
-        <button type="submit" className="w-full rounded bg-blue-600 text-xs py-2 font-bold hover:bg-blue-700">+ Add</button>
+        
+        <button type="submit" className="w-full rounded bg-green-600 text-xs py-2 font-bold hover:bg-green-700 shadow-lg transition transform active:scale-95">
+          {isBulkMode ? `Generate Rooms (${formik.values.startNumber || '0'} - ${formik.values.endNumber || '0'})` : '+ Create Room'}
+        </button>
       </form>
     </div>
   );
@@ -187,23 +294,49 @@ function AddRoomForm({ floor, onRoomAdded }) {
 // --- ( 3 ) MAIN COMPONENT ---
 function HostelManager() {
   const [structure, setStructure] = useState([]);
+  const [discounts, setDiscounts] = useState([]); // Discount Library
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
 
+  // Modal State for Discount
+  const [discountModalOpen, setDiscountModalOpen] = useState(false);
+  const [targetRoom, setTargetRoom] = useState(null);
+
   const fetchData = async (newBlockId = null) => {
     try {
-      const res = await apiClient.get('/rooms/structure');
-      setStructure(res.data);
+      const [structRes, discRes] = await Promise.all([
+        apiClient.get('/rooms/structure'),
+        apiClient.get('/discounts') // Fetch discount rules
+      ]);
+      
+      setStructure(structRes.data);
+      setDiscounts(discRes.data);
       
       if (newBlockId) {
         setActiveBlockId(newBlockId);
         setShowWizard(false);
-      } else if (res.data.length > 0 && (!activeBlockId || !res.data.find(b => b._id === activeBlockId))) {
-        setActiveBlockId(res.data[0]._id);
+      } else if (structRes.data.length > 0 && (!activeBlockId || !structRes.data.find(b => b._id === activeBlockId))) {
+        setActiveBlockId(structRes.data[0]._id);
       }
     } catch (err) { console.error(err); }
   };
   useEffect(() => { fetchData(); }, []);
+
+  // --- HANDLER: APPLY DISCOUNT ---
+  const handleApplyDiscount = async (discountId) => {
+    try {
+      await apiClient.put(`/rooms/apply-discount/${targetRoom._id}`, { discountId });
+      alert("Discount Updated!");
+      setDiscountModalOpen(false);
+      fetchData(); // Refresh UI
+    } catch (err) { alert("Failed to apply discount"); }
+  };
+
+  const openDiscountModal = (e, room) => {
+    e.stopPropagation(); // Prevent triggering other clicks
+    setTargetRoom(room);
+    setDiscountModalOpen(true);
+  };
 
   const handleDeleteBlock = async (block) => {
     if (!window.confirm(`Delete ${block.name}?`)) return;
@@ -264,10 +397,38 @@ function HostelManager() {
                   
                   <div className="flex flex-wrap gap-3">
                     {floor.rooms.map(room => (
-                      <div key={room._id} className={`relative group rounded p-3 text-center shadow-md min-w-[90px] cursor-pointer ${room.isStaffRoom ? 'bg-purple-900/80 border-purple-500' : 'bg-gray-700 border-gray-600'}`}>
-                        <div className="font-bold text-white text-lg">{room.roomNumber}</div>
+                      <div key={room._id} className={`relative group rounded p-3 text-center shadow-md min-w-[100px] border transition hover:scale-105 cursor-pointer 
+                        ${room.isStaffRoom ? 'bg-purple-900/80 border-purple-500' : room.activeDiscount ? 'border-green-500 bg-green-900/20' : 'bg-gray-700 border-gray-600'}`}>
+                        
+                        {/* Discount Badge */}
+                        {room.activeDiscount && (
+                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap z-10">
+                            {room.activeDiscount.type === 'Fixed' ? `-₹${room.activeDiscount.value}` : `-${room.activeDiscount.value}%`}
+                          </div>
+                        )}
+
+                        <div className="font-bold text-white text-lg mt-1">{room.roomNumber}</div>
                         <div className="text-xs text-gray-300 mb-1 uppercase">{room.isStaffRoom ? (room.staffRole || 'Staff') : `${room.capacity} Bed`}</div>
-                        <button onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room._id); }} className="absolute -top-2 -right-2 hidden group-hover:block bg-red-600 text-white rounded-full w-5 h-5 text-xs leading-none">&times;</button>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex justify-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {!room.isStaffRoom && (
+                            <button 
+                              onClick={(e) => openDiscountModal(e, room)}
+                              className="bg-blue-600 p-1 rounded hover:bg-blue-500 text-white text-sm"
+                              title="Apply Discount"
+                            >
+                              🏷️
+                            </button>
+                          )}
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room._id); }} 
+                            className="bg-red-600 p-1 rounded hover:bg-red-500 text-white text-sm"
+                            title="Delete Room"
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </div>
                     ))}
                     {floor.rooms.length === 0 && <span className="text-gray-500 italic text-sm py-2">No rooms.</span>}
@@ -279,6 +440,39 @@ function HostelManager() {
             </div>
           )}
         </>
+      )}
+
+      {/* --- DISCOUNT SELECTION MODAL --- */}
+      {discountModalOpen && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={() => setDiscountModalOpen(false)}>
+          <div className="bg-gray-800 p-6 rounded-lg w-80 border border-gray-600 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold mb-4 text-white">Apply Discount to {targetRoom?.roomNumber}</h3>
+            
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              <button 
+                onClick={() => handleApplyDiscount(null)}
+                className="w-full p-2 text-left rounded hover:bg-gray-700 text-gray-400 border border-transparent hover:border-gray-500"
+              >
+                🚫 Remove Discount
+              </button>
+
+              {discounts.map(d => (
+                <button 
+                  key={d._id}
+                  onClick={() => handleApplyDiscount(d._id)}
+                  className="w-full p-2 text-left rounded bg-gray-700 hover:bg-green-900/50 border border-gray-600 hover:border-green-500 text-white transition"
+                >
+                  <div className="font-bold">{d.name}</div>
+                  <div className="text-xs text-green-400">
+                    {d.type === 'Fixed' ? `₹${d.value} OFF` : `${d.value}% OFF`}
+                  </div>
+                </button>
+              ))}
+            </div>
+            
+            <button onClick={() => setDiscountModalOpen(false)} className="mt-4 w-full bg-gray-600 py-2 rounded text-white hover:bg-gray-700">Cancel</button>
+          </div>
+        </div>
       )}
     </div>
   );

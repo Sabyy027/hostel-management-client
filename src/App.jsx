@@ -9,11 +9,23 @@ import MyBooking from "./pages/MyBooking"; // <-- 1. Import
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import ManagerRoute from "./components/ManagerRoute";
 import HostelManager from "./pages/admin/HostelManager";
 import OccupancyDashboard from "./pages/admin/OccupancyDashboard";
 import StaffManager from "./pages/admin/StaffManager";
 import MaintenanceAdmin from "./pages/admin/MaintenanceAdmin";
 import RaiseComplaint from "./pages/student/RaiseComplaint";
+import StudentServices from "./pages/student/StudentServices";
+import PaymentHistory from "./pages/student/PaymentHistory";
+import MyDues from "./pages/student/MyDues";
+import StaffRoute from "./components/StaffRoute";
+import StaffDashboard from "./pages/staff/StaffDashboard";
+import ReportsDashboard from "./pages/admin/ReportsDashboard";
+import StaffRegister from "./pages/StaffRegister";
+import ChangePassword from "./pages/ChangePassword";
+import ResidentManager from "./pages/admin/ResidentManager";
+import BillingDashboard from "./pages/admin/BillingDashboard";
+import ExpenseManager from "./pages/admin/ExpenseManager";
 
 function App() {
   return (
@@ -23,6 +35,14 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route
+          path="/change-password"
+          element={
+            <ProtectedRoute>
+              <ChangePassword />
+            </ProtectedRoute>
+          }
+        />
 
         {/* --- Protected Route (for ALL users) --- */}
         <Route
@@ -56,26 +76,41 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {/* --- WARDEN & ADMIN SHARED PAGES --- */}
+        <Route
+          path="/admin/residents"
+          element={
+            <ManagerRoute>
+              <ResidentManager />
+            </ManagerRoute>
+          }
+        />
+        <Route
+          path="/admin/occupancy"
+          element={
+            <ManagerRoute>
+              <OccupancyDashboard />
+            </ManagerRoute>
+          }
+        />
+        <Route
+          path="/admin/maintenance"
+          element={
+            <ManagerRoute>
+              <MaintenanceAdmin />
+            </ManagerRoute>
+          }
+        />
+
+        {/* --- ADMIN ONLY (Keep as AdminRoute) --- */}
         <Route
           path="/admin/structure"
           element={
             <AdminRoute>
-              {" "}
-              <HostelManager />{" "}
+              <HostelManager />
             </AdminRoute>
           }
         />
-
-        <Route
-          path="/admin/occupancy"
-          element={
-            <AdminRoute>
-              {" "}
-              <OccupancyDashboard />{" "}
-            </AdminRoute>
-          }
-        />
-
         <Route
           path="/admin/staff"
           element={
@@ -85,10 +120,26 @@ function App() {
           }
         />
         <Route
-          path="/admin/maintenance"
+          path="/admin/billing-tools"
           element={
             <AdminRoute>
-              <MaintenanceAdmin />
+              <BillingDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <AdminRoute>
+              <ReportsDashboard />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/expenses"
+          element={
+            <AdminRoute>
+              <ExpenseManager />
             </AdminRoute>
           }
         />
@@ -102,6 +153,39 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/student/services"
+          element={
+            <ProtectedRoute>
+              <StudentServices />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/payments"
+          element={
+            <ProtectedRoute>
+              <PaymentHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/dues"
+          element={
+            <ProtectedRoute>
+              <MyDues />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/staff/dashboard"
+          element={
+            <StaffRoute>
+              <StaffDashboard />
+            </StaffRoute>
+          }
+        />
+        <Route path="/staff-register" element={<StaffRegister />} />
       </Routes>
     </BrowserRouter>
   );

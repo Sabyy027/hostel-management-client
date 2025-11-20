@@ -27,21 +27,29 @@ function Login() {
         loginData
       );
 
-      // 7. Handle success
+      // 7. Handle success & Store Data
       console.log('Login successful:', response.data);
       setLoading(false);
 
-      // 8. *** IMPORTANT: Store the token ***
-      // We'll store it in localStorage to keep the user logged in
       localStorage.setItem('token', response.data.token);
-      
-      // We can also store user info, but be careful with sensitive data
       localStorage.setItem('user', JSON.stringify(response.data.user));
+      const user = response.data.user;
 
-      // 9. Redirect to a new "Dashboard" page (which we'll create)
-      // For now, let's just log a message. We'll add the redirect next.
-      // navigate('/dashboard'); 
-      navigate('/dashboard');
+      // --- NEW LOGIC: CHECK FIRST LOGIN ---
+      if (user.isFirstLogin) {
+        navigate('/change-password');
+        return; // Stop here, don't redirect to dashboard yet
+      }
+      // ------------------------------------
+
+      // Normal Redirects
+      if (user.role === 'admin' || user.role === 'warden') {
+        navigate('/dashboard'); 
+      } else if (user.role === 'staff') {
+        navigate('/staff/dashboard'); 
+      } else {
+        navigate('/dashboard'); // Student
+      }
 
     } catch (err) {
       console.error('Login error:', err);
