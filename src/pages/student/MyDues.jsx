@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import StudentLayout from '../../components/StudentLayout';
 
 function MyDues() {
   const [dues, setDues] = useState([]);
@@ -9,7 +10,9 @@ function MyDues() {
     try {
       const res = await apiClient.get('/billing/my-pending');
       setDues(res.data);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error('Error fetching dues:', err);
+    }
     finally { setLoading(false); }
   };
 
@@ -66,31 +69,41 @@ function MyDues() {
     } catch (err) { alert("Error initiating payment"); }
   };
 
-  if (loading) return <div className="p-10 text-white text-center">Loading Dues...</div>;
+  if (loading) return <StudentLayout><div className="p-10 text-center">Loading Dues...</div></StudentLayout>;
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Pending Dues & Fines</h1>
+    <StudentLayout>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">Pending Dues & Fines</h2>
+          <p className="text-slate-500">Manage your outstanding payments</p>
+        </div>
       
       <div className="grid gap-4">
         {dues.length === 0 && (
-          <div className="p-10 bg-gray-800 rounded-lg text-center text-gray-400 border border-gray-700">
-            <h2 className="text-xl text-green-400 mb-2">All Clear!</h2>
-            <p>You have no pending dues.</p>
+          <div className="p-10 bg-white rounded-xl text-center border border-slate-200 shadow-sm">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+              <span className="text-3xl">✓</span>
+            </div>
+            <h3 className="text-xl font-bold text-green-600 mb-2">All Clear!</h3>
+            <p className="text-slate-600">You have no pending dues.</p>
           </div>
         )}
 
         {dues.map(due => (
-          <div key={due._id} className="bg-gray-800 p-6 rounded-lg border-l-4 border-red-500 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-              <h3 className="text-xl font-bold text-red-400">₹{due.totalAmount}</h3>
-              <p className="text-gray-300 font-bold">{due.items[0]?.description}</p>
-              <p className="text-xs text-gray-500">Invoice: {due.invoiceId} • Date: {new Date(due.createdAt).toLocaleDateString()}</p>
+          <div key={due._id} className="bg-white p-6 rounded-xl border-l-4 border-red-500 shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-2">
+                <h3 className="text-2xl font-bold text-slate-900">₹{due.totalAmount.toLocaleString()}</h3>
+                <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold uppercase rounded">Due</span>
+              </div>
+              <p className="text-slate-700 font-medium">{due.items[0]?.description}</p>
+              <p className="text-sm text-slate-500 mt-1">Invoice: {due.invoiceId} • {new Date(due.createdAt).toLocaleDateString()}</p>
             </div>
             
             <button 
               onClick={() => handlePay(due)}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded shadow transition"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-indigo-200 transition-all hover:scale-105"
             >
               Pay Now
             </button>
@@ -98,6 +111,7 @@ function MyDues() {
         ))}
       </div>
     </div>
+    </StudentLayout>
   );
 }
 

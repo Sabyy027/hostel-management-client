@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import AdminLayout from '../../components/AdminLayout';
 
 function StaffManager() {
   const [activeTab, setActiveTab] = useState('direct'); // 'direct' or 'link'
@@ -53,8 +54,12 @@ function StaffManager() {
   };
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Manage Staff</h1>
+    <AdminLayout>
+      <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">Manage Staff</h1>
+        <p className="text-sm text-slate-500">Create and manage staff accounts</p>
+      </div>
 
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
         {/* TABS */}
@@ -138,12 +143,13 @@ function StaffManager() {
               <div className="font-bold text-lg text-white">{staff.username}</div>
               <div className="text-blue-400 text-sm uppercase">{staff.designation}</div>
             </div>
-            <div className="text-gray-500 text-xs mt-1">{staff.email}</div>
-            <div className="text-gray-500 text-xs">Ph: {staff.phoneNumber}</div>
+            <div className="text-slate-500 text-xs mt-1">{staff.email}</div>
+            <div className="text-slate-500 text-xs">Ph: {staff.phoneNumber}</div>
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
 export default StaffManager;

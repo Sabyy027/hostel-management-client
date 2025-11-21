@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import AdminLayout from '../../components/AdminLayout';
 
 function MaintenanceAdmin() {
   const [tickets, setTickets] = useState([]);
@@ -28,8 +29,12 @@ function MaintenanceAdmin() {
   };
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Maintenance Overview</h1>
+    <AdminLayout>
+      <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">Maintenance Overview</h1>
+        <p className="text-sm text-slate-500">Manage and assign maintenance tickets</p>
+      </div>
       
       <div className="space-y-4">
         {tickets.map(ticket => (
@@ -79,9 +84,10 @@ function MaintenanceAdmin() {
             </div>
           </div>
         ))}
-        {tickets.length === 0 && <p className="text-gray-500">No maintenance requests found.</p>}
+        {tickets.length === 0 && <p className="text-slate-500">No maintenance requests found.</p>}
       </div>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
 export default MaintenanceAdmin;

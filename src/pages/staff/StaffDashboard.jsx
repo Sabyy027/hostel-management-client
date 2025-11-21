@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import StaffLayout from '../../components/StaffLayout';
 
 function StaffDashboard() {
   const [tickets, setTickets] = useState([]);
@@ -38,12 +39,21 @@ function StaffDashboard() {
     }
   };
 
-  if (loading) return <div className="p-10 text-white text-center">Loading your tasks...</div>;
+  if (loading) return (
+    <StaffLayout>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-slate-600 font-medium">Loading your tasks...</p>
+      </div>
+    </StaffLayout>
+  );
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-2">Staff Dashboard</h1>
-      <p className="text-gray-400 mb-8">Manage your assigned maintenance requests.</p>
+    <StaffLayout>
+      <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">My Maintenance Tasks</h1>
+        <p className="text-sm text-slate-500">Manage your assigned maintenance requests</p>
+      </div>
 
       <div className="grid gap-6">
         {tickets.length === 0 && (
@@ -122,7 +132,7 @@ function StaffDashboard() {
                 )}
                 
                 {ticket.status === 'Resolved' && (
-                  <div className="text-center text-xs text-gray-500 italic mt-2">
+                  <div className="text-center text-xs text-slate-500 italic mt-2">
                     Completed on {new Date(ticket.updatedAt).toLocaleDateString()}
                   </div>
                 )}
@@ -131,7 +141,8 @@ function StaffDashboard() {
           </div>
         ))}
       </div>
-    </div>
+      </div>
+    </StaffLayout>
   );
 }
 

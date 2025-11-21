@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import AdminLayout from '../../components/AdminLayout';
 
 function OccupancyDashboard() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isAdmin = user.role === 'admin';
+  const isRT = user.designation === 'Resident Tutor';
+  
   const [structure, setStructure] = useState([]);
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [availableRTs, setAvailableRTs] = useState([]);
   
   // Modal State
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -24,20 +30,56 @@ function OccupancyDashboard() {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  const fetchAvailableRTs = async () => {
+    if (!isAdmin) return;
+    try {
+      const res = await apiClient.get('/users/staff');
+      const rts = res.data.filter(s => s.designation === 'Resident Tutor');
+      setAvailableRTs(rts);
+    } catch (err) {
+      console.error('Error fetching RTs:', err);
+    }
+  };
+
+  useEffect(() => { 
+    fetchData(); 
+    fetchAvailableRTs();
+  }, []);
+
+  const handleAssignRT = async (floorId, rtId) => {
+    try {
+      await apiClient.put(`/floors/assign-rt/${floorId}`, { rtId: rtId || null });
+      alert('RT assignment updated successfully');
+      fetchData(); // Refresh data
+    } catch (err) {
+      alert('Error assigning RT: ' + (err.response?.data?.message || err.message));
+    }
+  };
 
   const getActiveBlockData = () => structure.find(b => b._id === activeBlockId);
 
   // --- HELPER: Status Color ---
   const getRoomColor = (room) => {
-    if (room.isStaffRoom) return 'bg-purple-900/50 border-purple-500 text-purple-200';
-    if (room.isOccupied) return 'bg-red-900/50 border-red-500 text-red-200';
-    return 'bg-green-900/50 border-green-500 text-green-200';
+    if (room.isStaffRoom) return 'bg-purple-100 border-purple-300 text-purple-700';
+    if (room.isOccupied) return 'bg-red-100 border-red-300 text-red-700';
+    return 'bg-green-100 border-green-300 text-green-700';
   };
 
   return (
-    <div className="container mx-auto p-6 text-white min-h-screen relative">
-      <h1 className="text-3xl font-bold mb-6">Occupancy Dashboard</h1>
+    <AdminLayout>
+      <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">
+          {isAdmin ? 'Occupancy & RT Assignment' : 'Occupancy Dashboard'}
+        </h1>
+        <p className="text-sm text-slate-500">
+          {isAdmin 
+            ? 'Assign Resident Tutors to floors and monitor occupancy' 
+            : isRT 
+            ? 'View occupancy for your assigned floors' 
+            : 'Visual room map and availability'}
+        </p>
+      </div>
 
       {/* --- LEGEND --- */}
       <div className="flex gap-4 mb-6 text-sm">
@@ -66,9 +108,37 @@ function OccupancyDashboard() {
         <div className="space-y-6 animate-fade-in">
           {getActiveBlockData().floors.map(floor => (
             <div key={floor._id} className="rounded-lg p-5 shadow-lg border border-gray-700 bg-gray-800">
-              <div className="flex justify-between items-center mb-4 border-b border-gray-600 pb-2">
-                <h3 className="text-xl font-bold text-white">{floor.name}</h3>
-                <span className="text-xs text-gray-400 uppercase">{floor.type} Floor</span>
+              <div className="flex justify-between items-center mb-4 border-b border-gray-600 pb-3">
+                <div>
+                  <h3 className="text-xl font-bold text-white">{floor.name}</h3>
+                  <span className="text-xs text-gray-400 uppercase">{floor.type} Floor</span>
+                </div>
+                
+                {/* RT ASSIGNMENT DROPDOWN (Admin Only) */}
+                {isAdmin && (
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm text-gray-300">Assigned RT:</label>
+                    <select
+                      value={floor.assignedRT?._id || ''}
+                      onChange={(e) => handleAssignRT(floor._id, e.target.value)}
+                      className="bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                    >
+                      <option value="">-- Unassigned --</option>
+                      {availableRTs.map(rt => (
+                        <option key={rt._id} value={rt._id}>
+                          {rt.username} ({rt.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* RT VIEW: Show assigned RT name */}
+                {isRT && floor.assignedRT && (
+                  <div className="text-sm text-indigo-300">
+                    Assigned to: {floor.assignedRT.username}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -152,7 +222,7 @@ function OccupancyDashboard() {
 
             <button 
               onClick={() => setSelectedRoom(null)}
-              className="w-full mt-6 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition"
+              className="w-full mt-6 bg-slate-600 hover:bg-slate-700 text-white py-2 rounded transition"
             >
               Close
             </button>
@@ -160,7 +230,8 @@ function OccupancyDashboard() {
         </div>
       )}
 
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
 

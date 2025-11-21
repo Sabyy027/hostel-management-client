@@ -10,6 +10,7 @@ import MyBooking from "./pages/MyBooking"; // <-- 1. Import
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
 import ManagerRoute from "./components/ManagerRoute";
+import BookingRequiredRoute from "./components/BookingRequiredRoute";
 import HostelManager from "./pages/admin/HostelManager";
 import OccupancyDashboard from "./pages/admin/OccupancyDashboard";
 import StaffManager from "./pages/admin/StaffManager";
@@ -62,8 +63,9 @@ function App() {
           path="/my-profile"
           element={
             <ProtectedRoute>
-              {" "}
-              <Profile />{" "}
+              <BookingRequiredRoute>
+                <Profile />
+              </BookingRequiredRoute>
             </ProtectedRoute>
           }
         />
@@ -144,12 +146,14 @@ function App() {
           }
         />
 
-        {/* STUDENT ROUTES */}
+        {/* STUDENT ROUTES - Require Booking */}
         <Route
           path="/student/complaints"
           element={
             <ProtectedRoute>
-              <RaiseComplaint />
+              <BookingRequiredRoute>
+                <RaiseComplaint />
+              </BookingRequiredRoute>
             </ProtectedRoute>
           }
         />
@@ -157,7 +161,9 @@ function App() {
           path="/student/services"
           element={
             <ProtectedRoute>
-              <StudentServices />
+              <BookingRequiredRoute>
+                <StudentServices />
+              </BookingRequiredRoute>
             </ProtectedRoute>
           }
         />
@@ -165,7 +171,9 @@ function App() {
           path="/student/payments"
           element={
             <ProtectedRoute>
-              <PaymentHistory />
+              <BookingRequiredRoute>
+                <PaymentHistory />
+              </BookingRequiredRoute>
             </ProtectedRoute>
           }
         />
@@ -173,7 +181,9 @@ function App() {
           path="/student/dues"
           element={
             <ProtectedRoute>
-              <MyDues />
+              <BookingRequiredRoute>
+                <MyDues />
+              </BookingRequiredRoute>
             </ProtectedRoute>
           }
         />

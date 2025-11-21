@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import AdminLayout from '../../components/AdminLayout';
 
 function ExpenseManager() {
   const [expenses, setExpenses] = useState([]);
@@ -34,11 +35,18 @@ function ExpenseManager() {
   };
 
   return (
-    <div className="container mx-auto p-6 text-white grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <AdminLayout>
+      <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-800">Expense Manager</h1>
+        <p className="text-sm text-slate-500">Track and manage operational expenses</p>
+      </div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       {/* --- FORM SECTION --- */}
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg h-fit">
-        <h2 className="text-xl font-bold mb-4 text-red-400">Log New Expense</h2>
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 h-fit">
+        <h2 className="text-xl font-bold mb-4 text-red-600">Log New Expense</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input type="text" placeholder="Title (e.g. Jan Electric Bill)" className="w-full p-2 bg-gray-700 rounded text-white" 
             value={form.title} onChange={e => setForm({...form, title: e.target.value})} required />
@@ -83,14 +91,16 @@ function ExpenseManager() {
                   <td className="p-3 font-bold">{exp.title}</td>
                   <td className="p-3 text-xs"><span className="bg-gray-700 px-2 py-1 rounded">{exp.category}</span></td>
                   <td className="p-3 text-right font-mono text-red-400">-₹{exp.amount}</td>
-                  <td className="p-3 text-center"><button onClick={() => handleDelete(exp._id)} className="text-red-500 hover:text-white">&times;</button></td>
+                  <td className="p-3 text-center"><button onClick={() => handleDelete(exp._id)} className="text-red-500 hover:text-red-700">&times;</button></td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-    </div>
+      </div>
+      </div>
+    </AdminLayout>
   );
 }
 export default ExpenseManager;

@@ -4,6 +4,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   PieChart, Pie, Cell, Legend 
 } from 'recharts';
+import AdminLayout from '../../components/AdminLayout';
 
 function ReportsDashboard() {
   const [stats, setStats] = useState(null);
@@ -15,18 +16,34 @@ function ReportsDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="p-10 text-white text-center">Analyzing Financials...</div>;
-  if (!stats) return <div className="p-10 text-white text-center">No data found</div>;
+  if (loading) return (
+    <AdminLayout>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-slate-600 font-medium">Analyzing Financials...</p>
+      </div>
+    </AdminLayout>
+  );
+  
+  if (!stats) return (
+    <AdminLayout>
+      <div className="flex items-center justify-center h-64">
+        <p className="text-slate-600 font-medium">No data found</p>
+      </div>
+    </AdminLayout>
+  );
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
 
   return (
-    <div className="container mx-auto p-6 text-white space-y-8">
+    <AdminLayout>
+      <div className="space-y-6">
       
       {/* --- HEADER --- */}
       <div className="flex justify-between items-end">
-        <h1 className="text-3xl font-bold">Financial Performance</h1>
-        <div className="text-right text-xs text-gray-400">Real-time Analysis</div>
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Financial Performance</h1>
+          <p className="text-sm text-slate-500">Real-time financial analytics and insights</p>
+        </div>
       </div>
 
       {/* --- KPI CARDS --- */}
@@ -111,7 +128,8 @@ function ReportsDashboard() {
         </div>
 
       </div>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
 

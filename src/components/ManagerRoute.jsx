@@ -7,8 +7,8 @@ function ManagerRoute({ children }) {
 
   if (!token || !user) return <Navigate to="/login" replace />;
 
-  // Allow Admin OR Warden
-  if (user.role === 'admin' || user.role === 'warden') {
+  // Allow Admin, Warden, OR Resident Tutor
+  if (user.role === 'admin' || user.role === 'warden' || user.role === 'resident tutor') {
     return children;
   }
 

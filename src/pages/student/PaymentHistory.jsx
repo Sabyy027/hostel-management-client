@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
+import StudentLayout from '../../components/StudentLayout';
 
 function PaymentHistory() {
   const [invoices, setInvoices] = useState([]);
@@ -41,67 +42,97 @@ function PaymentHistory() {
     }
   };
 
-  if (loading) return <div className="p-10 text-white text-center">Loading History...</div>;
+  if (loading) return (
+    <StudentLayout>
+      <div className="flex items-center justify-center p-10">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
+            <svg className="animate-spin h-8 w-8 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
+          <p className="text-slate-600 font-medium">Loading payment history...</p>
+        </div>
+      </div>
+    </StudentLayout>
+  );
 
   return (
-    <div className="container mx-auto p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">Transaction History</h1>
-      
-      <div className="bg-gray-800 rounded-lg shadow-xl overflow-hidden">
-        <table className="w-full text-left">
-          <thead className="bg-gray-700 text-gray-400 text-xs uppercase">
-            <tr>
-              <th className="p-4">Date</th>
-              <th className="p-4">Description</th>
-              <th className="p-4">Amount</th>
-              <th className="p-4">Status</th>
-              <th className="p-4 text-center">Invoice</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-700">
-            {invoices.map(inv => (
-              <tr key={inv._id} className="hover:bg-gray-750 transition">
-                <td className="p-4 text-sm text-gray-300">
-                  {new Date(inv.createdAt).toLocaleDateString()}
-                </td>
-                <td className="p-4">
-                    {inv.items.map((item, i) => (
-                        <div key={i} className="font-semibold text-white text-sm">
-                          {/* Highlight keywords for clarity */}
-                          {item.description.includes('Service') ? '🛠️ ' : 
-                           item.description.includes('Fine') ? '⚠️ ' : 
-                           item.description.includes('Hostel') ? '🏠 ' : '📄 '}
-                          {item.description}
-                        </div>
-                    ))}
-                    <div className="text-xs text-gray-500 mt-1">{inv.invoiceId}</div>
-                </td>
-                <td className="p-4 font-mono font-bold text-blue-300">₹{inv.totalAmount}</td>
-                <td className="p-4">
-                    <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${
-                        inv.status === 'Paid' ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
-                    }`}>
-                        {inv.status}
-                    </span>
-                </td>
-                <td className="p-4 text-center">
-                   {inv.status === 'Paid' && (
-                     <button 
-                       onClick={() => handleDownload(inv._id)}
-                       className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded transition text-sm font-medium"
-                       title="Download Invoice"
-                     >
-                       ⬇️ PDF
-                     </button>
-                   )}
-                </td>
+    <StudentLayout>
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">Transaction History</h2>
+            <p className="text-sm text-slate-500">View and download your invoices</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <table className="w-full text-left">
+            <thead className="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Date</th>
+                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Description</th>
+                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Amount</th>
+                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
+                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">Invoice</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        {invoices.length === 0 && <div className="p-8 text-center text-gray-500">No transaction history found.</div>}
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {invoices.map(inv => (
+                <tr key={inv._id} className="hover:bg-slate-50 transition-colors">
+                  <td className="p-4 text-sm text-slate-600">
+                    {new Date(inv.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-4">
+                      {inv.items.map((item, i) => (
+                          <div key={i} className="font-semibold text-slate-800 text-sm">
+                            {item.description.includes('Service') ? '🛠️ ' : 
+                             item.description.includes('Fine') ? '⚠️ ' : 
+                             item.description.includes('Hostel') ? '🏠 ' : '📄 '}
+                            {item.description}
+                          </div>
+                      ))}
+                      <div className="text-xs text-slate-400 mt-1 font-mono">{inv.invoiceId}</div>
+                  </td>
+                  <td className="p-4 font-mono font-bold text-slate-800">₹{inv.totalAmount}</td>
+                  <td className="p-4">
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          inv.status === 'Paid' 
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-red-100 text-red-700'
+                      }`}>
+                          {inv.status}
+                      </span>
+                  </td>
+                  <td className="p-4 text-center">
+                     {inv.status === 'Paid' && (
+                       <button 
+                         onClick={() => handleDownload(inv._id)}
+                         className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium inline-flex items-center gap-1.5 shadow-sm"
+                         title="Download Invoice"
+                       >
+                         <span>📥</span> PDF
+                       </button>
+                     )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {invoices.length === 0 && (
+            <div className="p-12 text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
+                <span className="text-3xl">📭</span>
+              </div>
+              <p className="text-slate-500 font-medium">No transaction history found</p>
+              <p className="text-sm text-slate-400 mt-1">Your payment records will appear here</p>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </StudentLayout>
   );
 }
 

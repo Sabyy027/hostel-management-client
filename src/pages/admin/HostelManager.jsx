@@ -2,291 +2,398 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import AdminLayout from '../../components/AdminLayout';
+import { Building2, Layers, Plus, Trash2, Sparkles, Home, Snowflake, Tag, X, Users, BedDouble, Bath, Wifi, Search } from 'lucide-react';
 
-// --- ( 1 ) CREATE BLOCK WIZARD (Fixed: No external icons) ---
-function CreateBlockWizard({ onBlockCreated }) {
-  const [blockName, setBlockName] = useState('');
-  const [batches, setBatches] = useState([{ count: '', type: 'AC' }]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const addBatch = () => {
-    setBatches([...batches, { count: '', type: 'Non-AC' }]);
-  };
-
-  const removeBatch = (index) => {
-    if (batches.length === 1) return;
-    const newBatches = batches.filter((_, i) => i !== index);
-    setBatches(newBatches);
-  };
-
-  const updateBatch = (index, field, value) => {
-    const newBatches = [...batches];
-    newBatches[index][field] = value;
-    setBatches(newBatches);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!blockName) return alert("Please enter a Block Name");
-    
-    setIsSubmitting(true);
-    try {
-      // 1. Create Block
-      const blockRes = await apiClient.post('/blocks', { name: blockName });
-      const newBlockId = blockRes.data._id;
-
-      // 2. Create Floors
-      await apiClient.post('/floors/auto-generate', {
-        blockId: newBlockId,
-        batches: batches
-      });
-
-      setBlockName('');
-      setBatches([{ count: '', type: 'AC' }]);
-      onBlockCreated(newBlockId);
-      alert(`Block ${blockName} created successfully!`);
-
-    } catch (err) {
-      alert(err.response?.data?.message || 'Failed to create block');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+// --- MODAL COMPONENT ---
+function Modal({ isOpen, onClose, title, children }) {
+  if (!isOpen) return null;
+  
   return (
-    <div className="bg-gray-800 rounded-lg p-6 mb-8 border border-gray-700 shadow-xl">
-      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        {/* Replaced Icon with Emoji for simplicity */}
-        🏢 Create New Block & Floors
-      </h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm text-gray-400 mb-1">Block Name</label>
-          <input 
-            type="text" 
-            value={blockName}
-            onChange={(e) => setBlockName(e.target.value)}
-            placeholder="e.g. Block A"
-            className="w-full md:w-1/2 rounded bg-gray-900 border border-gray-600 p-2 text-white focus:border-blue-500 outline-none"
-          />
-        </div>
-
-        <div className="bg-gray-900/50 p-4 rounded-lg border border-gray-700">
-          <label className="block text-sm text-blue-400 mb-3 font-bold">Floor Configuration (Stack Builder)</label>
-          
-          {batches.map((batch, index) => (
-            <div key={index} className="flex items-end gap-4 mb-3 animate-fade-in">
-              <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">No. of Floors</label>
-                <input 
-                  type="number" 
-                  min="1"
-                  value={batch.count}
-                  onChange={(e) => updateBatch(index, 'count', e.target.value)}
-                  placeholder="3"
-                  className="w-full rounded bg-gray-800 border border-gray-600 p-2 text-white"
-                  required
-                />
-              </div>
-              
-              <div className="flex-1">
-                <label className="block text-xs text-gray-500 mb-1">Floor Type</label>
-                <select 
-                  value={batch.type}
-                  onChange={(e) => updateBatch(index, 'type', e.target.value)}
-                  className="w-full rounded bg-gray-800 border border-gray-600 p-2 text-white"
-                >
-                  <option value="AC">AC (Attached Bath)</option>
-                  <option value="Non-AC">Non-AC (Common Bath)</option>
-                </select>
-              </div>
-
-              {batches.length > 1 && (
-                <button 
-                  type="button" 
-                  onClick={() => removeBatch(index)}
-                  className="p-2 text-red-400 hover:bg-red-900/30 rounded mb-[1px] font-bold"
-                >
-                  X
-                </button>
-              )}
-            </div>
-          ))}
-
-          <button 
-            type="button"
-            onClick={addBatch}
-            className="mt-2 flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-semibold"
-          >
-            <span className="text-lg font-bold">+</span> Add more floors
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200">
+        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
+          <h3 className="text-xl font-bold text-slate-800">{title}</h3>
+          <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors">
+            <X size={20} />
           </button>
         </div>
-
-        <button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="w-full md:w-auto px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded shadow-lg transition-all disabled:opacity-50"
-        >
-          {isSubmitting ? 'Creating...' : 'Generate Block Structure'}
-        </button>
-      </form>
+        <div className="p-6 overflow-y-auto">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
 
-// --- ( 2 ) ADD ROOM FORM ---
-function AddRoomForm({ floor, onRoomAdded }) {
-  const [isBulkMode, setIsBulkMode] = useState(false); // Toggle state
+// --- ( 1 ) CREATE BLOCK WIZARD ---
+function CreateBlockWizard({ onClose, onCreated }) {
+  const [blockName, setBlockName] = useState('');
+  const [batches, setBatches] = useState([{ count: 1, type: 'AC' }]);
+  const [loading, setLoading] = useState(false);
 
-  const formik = useFormik({
-    initialValues: { 
-      roomNumber: '',       // For Single Mode
-      startNumber: '',      // For Bulk Mode
-      endNumber: '',        // For Bulk Mode
-      capacity: 4, 
-      pricingPlans: [{ duration: 12, unit: 'months', price: 50000 }],
-      isStaffRoom: false, 
-      staffRole: 'RT', 
-      otherStaffDetails: '' 
-    },
-    // Validation schema changes based on mode
-    validationSchema: Yup.object().shape(
-      isBulkMode 
-        ? {
-            startNumber: Yup.number().required('Start required'),
-            endNumber: Yup.number().required('End required')
-          }
-        : {
-            roomNumber: Yup.string().required('Room No required')
-          }
-    ),
-    onSubmit: async (values, { resetForm }) => {
-      try {
-        const baseData = { 
-          ...values, 
-          type: floor.type, 
-          floorId: floor._id 
-        };
-
-        if (isBulkMode) {
-          await apiClient.post('/rooms/bulk-create', baseData);
-        } else {
-          await apiClient.post('/rooms/add', baseData);
-        }
-        
-        onRoomAdded();
-        resetForm();
-        alert(isBulkMode ? 'Bulk Rooms Created!' : 'Room Created!');
-      } catch (err) { 
-        alert(err.response?.data?.message || 'Error'); 
-      }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!blockName) return;
+    setLoading(true);
+    try {
+      const blockRes = await apiClient.post('/blocks', { name: blockName });
+      const newBlockId = blockRes.data._id;
+      await apiClient.post('/floors/auto-generate', { blockId: newBlockId, batches });
+      onCreated(newBlockId);
+      onClose();
+    } catch (error) {
+      alert('Failed to create block');
+    } finally {
+      setLoading(false);
     }
-  });
-
-  // Helper to add a new empty plan row
-  const addPlan = () => {
-    const newPlans = [...formik.values.pricingPlans, { duration: 6, unit: 'months', price: 0 }];
-    formik.setFieldValue('pricingPlans', newPlans);
-  };
-
-  // Helper to remove a plan row
-  const removePlan = (index) => {
-    if (formik.values.pricingPlans.length === 1) return;
-    const newPlans = formik.values.pricingPlans.filter((_, i) => i !== index);
-    formik.setFieldValue('pricingPlans', newPlans);
   };
 
   return (
-    <div className="rounded bg-gray-800 p-4 shadow-inner mt-4">
-      <div className="flex justify-between items-center mb-4">
-        <h4 className="text-sm font-bold text-blue-300">
-          {isBulkMode ? `Bulk Add to ${floor.name}` : `Add Room to ${floor.name}`}
-        </h4>
+    <Modal isOpen={true} onClose={onClose} title="Create New Property">
+      <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label className="block text-sm font-semibold text-slate-700 mb-2">Property / Block Name</label>
+        <input 
+          className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+          placeholder="e.g. Ocean Wing, Tower A"
+          value={blockName}
+          onChange={e => setBlockName(e.target.value)}
+          required
+        />
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex justify-between items-end">
+          <label className="block text-sm font-semibold text-slate-700">Floor Configuration</label>
+          <button 
+            type="button" 
+            onClick={() => setBatches([...batches, { count: 1, type: 'Non-AC' }])}
+            className="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+          >
+            <Plus size={14} /> Add Batch
+          </button>
+        </div>
         
-        {/* TOGGLE BUTTON */}
+        {batches.map((batch, idx) => (
+          <div key={idx} className="flex gap-4 items-start p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <div className="flex-1">
+              <label className="text-xs text-slate-500 uppercase font-bold mb-1 block">Floors</label>
+              <input 
+                type="number" 
+                min="1"
+                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold"
+                value={batch.count}
+                onChange={e => {
+                  const newBatches = [...batches];
+                  newBatches[idx].count = e.target.value;
+                  setBatches(newBatches);
+                }}
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-xs text-slate-500 uppercase font-bold mb-1 block">Type</label>
+              <select 
+                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm"
+                value={batch.type}
+                onChange={e => {
+                  const newBatches = [...batches];
+                  newBatches[idx].type = e.target.value;
+                  setBatches(newBatches);
+                }}
+              >
+                <option value="AC">Premium AC</option>
+                <option value="Non-AC">Standard Non-AC</option>
+              </select>
+            </div>
+            {batches.length > 1 && (
+              <button 
+                type="button"
+                onClick={() => setBatches(batches.filter((_, i) => i !== idx))}
+                className="mt-6 p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="pt-4 border-t border-slate-100 flex gap-3">
+        <button type="button" onClick={onClose} className="flex-1 py-3 text-slate-600 font-semibold hover:bg-slate-50 rounded-xl transition-colors">Cancel</button>
         <button 
-          type="button"
-          onClick={() => setIsBulkMode(!isBulkMode)}
-          className="text-xs bg-purple-600 hover:bg-purple-700 text-white px-2 py-1 rounded transition"
+          type="submit" 
+          disabled={loading}
+          className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all flex justify-center items-center gap-2"
         >
-          {isBulkMode ? 'Switch to Single' : 'Switch to Bulk'}
+          {loading ? <Sparkles className="animate-spin" size={18} /> : 'Create Property'}
         </button>
       </div>
-      
-      <form onSubmit={formik.handleSubmit} className="space-y-3">
-        
-        {/* DYNAMIC INPUTS */}
-        {isBulkMode ? (
-          <div className="grid grid-cols-2 gap-2 animate-fade-in">
+    </form>
+    </Modal>
+  );
+}
+
+// --- ( 2 ) ADD ROOM MODAL ---
+function AddRoomModal({ floor, onClose, onSuccess }) {
+  const [isBulk, setIsBulk] = useState(false);
+  const [formData, setFormData] = useState({
+    roomNumber: '',
+    startNumber: '',
+    endNumber: '',
+    capacity: 2,
+    isStaff: false
+  });
+  
+  const [pricingPlans, setPricingPlans] = useState([
+    { duration: 6, unit: 'months', price: 30000 },
+    { duration: 12, unit: 'months', price: 50000 }
+  ]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const payload = {
+      ...formData,
+      pricingPlans: pricingPlans,
+      floorId: floor._id,
+      type: floor.type
+    };
+    
+    try {
+      if (isBulk) await apiClient.post('/rooms/bulk-create', payload);
+      else await apiClient.post('/rooms/add', payload);
+      onSuccess();
+      onClose();
+    } catch (e) { alert('Error creating room'); }
+  };
+  
+  const addPricingPlan = () => {
+    setPricingPlans([...pricingPlans, { duration: 1, unit: 'months', price: 0 }]);
+  };
+  
+  const updatePricingPlan = (index, field, value) => {
+    const updated = [...pricingPlans];
+    updated[index][field] = field === 'price' || field === 'duration' ? Number(value) : value;
+    setPricingPlans(updated);
+  };
+  
+  const removePricingPlan = (index) => {
+    setPricingPlans(pricingPlans.filter((_, i) => i !== index));
+  };
+
+  return (
+    <Modal isOpen={true} onClose={onClose} title={`Add Room - ${floor.name}`}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex p-1 bg-slate-100 rounded-lg">
+        <button 
+          type="button" 
+          onClick={() => setIsBulk(false)}
+          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${!isBulk ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}
+        >
+          Single Room
+        </button>
+        <button 
+          type="button" 
+          onClick={() => setIsBulk(true)}
+          className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${isBulk ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}
+        >
+          Bulk Create
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {isBulk ? (
+          <>
             <div>
-              <label className="text-xs text-gray-400 block mb-1">Start No.</label>
-              <input type="number" {...formik.getFieldProps('startNumber')} className="w-full rounded bg-gray-700 p-2 text-sm placeholder-gray-500" placeholder="101"/>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Start #</label>
+              <input type="number" className="w-full p-3 border rounded-lg bg-slate-50" required 
+                onChange={e => setFormData({...formData, startNumber: e.target.value})}
+              />
             </div>
             <div>
-              <label className="text-xs text-gray-400 block mb-1">End No.</label>
-              <input type="number" {...formik.getFieldProps('endNumber')} className="w-full rounded bg-gray-700 p-2 text-sm placeholder-gray-500" placeholder="110"/>
+              <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">End #</label>
+              <input type="number" className="w-full p-3 border rounded-lg bg-slate-50" required
+                onChange={e => setFormData({...formData, endNumber: e.target.value})}
+              />
             </div>
-          </div>
+          </>
         ) : (
-          <div className="animate-fade-in">
-             <input type="text" placeholder="Room Number (e.g. 101)" {...formik.getFieldProps('roomNumber')} className="w-full rounded bg-gray-700 p-2 text-sm"/>
+          <div className="col-span-2">
+            <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Room Number</label>
+            <input type="text" className="w-full p-3 border rounded-lg bg-slate-50" placeholder="101" required
+              onChange={e => setFormData({...formData, roomNumber: e.target.value})}
+            />
           </div>
         )}
+      </div>
 
-        <div className="grid grid-cols-1 gap-2">
-          <select {...formik.getFieldProps('capacity')} className="w-full rounded bg-gray-700 p-2 text-sm">
-            {[1,2,3,4,5].map(n => <option key={n} value={n}>{n} Sharing</option>)}
-          </select>
-        </div>
+      <div>
+        <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Capacity</label>
+        <select className="w-full p-3 border rounded-lg bg-white" 
+          value={formData.capacity}
+          onChange={e => setFormData({...formData, capacity: Number(e.target.value)})}
+        >
+          {[1,2,3,4,6].map(n => <option key={n} value={n}>{n} Person</option>)}
+        </select>
+      </div>
 
-        {/* --- PRICING PLANS UI --- */}
-        <div className="bg-gray-700 p-2 rounded">
-          <label className="text-xs text-gray-400 font-bold mb-2 block">Pricing Plans</label>
-          {formik.values.pricingPlans.map((plan, index) => (
-            <div key={index} className="flex gap-2 mb-2">
-              <input 
-                type="number" placeholder="Dur" 
-                value={plan.duration}
-                onChange={e => formik.setFieldValue(`pricingPlans[${index}].duration`, e.target.value)}
-                className="w-1/4 rounded bg-gray-600 p-1 text-sm" 
-              />
-              <select 
-                value={plan.unit}
-                onChange={e => formik.setFieldValue(`pricingPlans[${index}].unit`, e.target.value)}
-                className="w-1/3 rounded bg-gray-600 p-1 text-sm"
-              >
-                <option value="months">Months</option>
-                <option value="year">Year</option>
-              </select>
-              <input 
-                type="number" placeholder="Price" 
-                value={plan.price}
-                onChange={e => formik.setFieldValue(`pricingPlans[${index}].price`, e.target.value)}
-                className="w-1/3 rounded bg-gray-600 p-1 text-sm" 
-              />
-              {formik.values.pricingPlans.length > 1 && (
-                <button type="button" onClick={() => removePlan(index)} className="text-red-400 font-bold">&times;</button>
+      <div className="flex items-center gap-2">
+        <input type="checkbox" id="isStaff" className="w-5 h-5 rounded text-indigo-600 focus:ring-indigo-500"
+          checked={formData.isStaff} onChange={e => setFormData({...formData, isStaff: e.target.checked})}
+        />
+        <label htmlFor="isStaff" className="text-sm font-medium text-slate-700">Mark as Staff Room</label>
+      </div>
+
+      {!formData.isStaff && (
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <label className="text-xs font-bold text-slate-500 uppercase">Pricing Plans</label>
+            <button 
+              type="button"
+              onClick={addPricingPlan}
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+            >
+              <Plus size={14} /> Add Plan
+            </button>
+          </div>
+          
+          {pricingPlans.map((plan, idx) => (
+            <div key={idx} className="flex gap-3 items-start p-3 bg-slate-50 rounded-lg border border-slate-200">
+              <div className="flex-1">
+                <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Duration</label>
+                <input 
+                  type="number" 
+                  min="1"
+                  className="w-full p-2 bg-white border border-slate-200 rounded text-sm"
+                  value={plan.duration}
+                  onChange={e => updatePricingPlan(idx, 'duration', e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Unit</label>
+                <select 
+                  className="w-full p-2 bg-white border border-slate-200 rounded text-sm"
+                  value={plan.unit}
+                  onChange={e => updatePricingPlan(idx, 'unit', e.target.value)}
+                >
+                  <option value="months">Months</option>
+                  <option value="years">Years</option>
+                </select>
+              </div>
+              <div className="flex-1">
+                <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Price (₹)</label>
+                <input 
+                  type="number"
+                  className="w-full p-2 bg-white border border-slate-200 rounded text-sm"
+                  value={plan.price}
+                  onChange={e => updatePricingPlan(idx, 'price', e.target.value)}
+                />
+              </div>
+              {pricingPlans.length > 1 && (
+                <button 
+                  type="button"
+                  onClick={() => removePricingPlan(idx)}
+                  className="mt-5 p-1.5 text-red-400 hover:bg-red-50 rounded transition-colors"
+                >
+                  <Trash2 size={14} />
+                </button>
               )}
             </div>
           ))}
-          <button type="button" onClick={addPlan} className="text-xs text-blue-300 hover:text-white">+ Add another plan</button>
         </div>
-        {/* ------------------------ */}
+      )}
 
-        <div className="rounded bg-gray-700 p-2 space-y-2">
-          <div className="flex items-center space-x-2"><input type="checkbox" name="isStaffRoom" checked={formik.values.isStaffRoom} onChange={formik.handleChange} className="h-4 w-4"/><span>Staff Room</span></div>
-          {formik.values.isStaffRoom && (
-            <select {...formik.getFieldProps('staffRole')} className="w-full rounded bg-gray-600 p-2 text-sm">
-              <option value="RT">Resident Tutor</option><option value="Warden">Warden</option><option value="Other">Other</option>
-            </select>
-          )}
+      <button className="w-full py-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 transition-all">
+        {isBulk ? 'Generate Rooms' : 'Add Room'}
+      </button>
+    </form>
+    </Modal>
+  );
+}
+
+// --- ( 3 ) ROOM CARD - Hotel Style ---
+function RoomCard({ room, onDelete, onDiscount }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div 
+      className="group relative bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Image Header */}
+      <div className="relative h-32 bg-gradient-to-br from-slate-100 to-slate-50 overflow-hidden">
+        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
+          <BedDouble size={48} className="text-indigo-200" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
         
-        <button type="submit" className="w-full rounded bg-green-600 text-xs py-2 font-bold hover:bg-green-700 shadow-lg transition transform active:scale-95">
-          {isBulkMode ? `Generate Rooms (${formik.values.startNumber || '0'} - ${formik.values.endNumber || '0'})` : '+ Create Room'}
-        </button>
-      </form>
+        {/* Badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+           {room.isStaffRoom && (
+             <span className="px-2 py-1 bg-purple-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm">Staff</span>
+           )}
+           {room.activeDiscount && (
+             <span className="px-2 py-1 bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm">
+               {room.activeDiscount.type === 'Fixed' ? '₹' : '%'}{room.activeDiscount.value} Off
+             </span>
+           )}
+        </div>
+
+        <div className="absolute bottom-2 left-3 text-white">
+          <div className="text-lg font-bold tracking-wide">Room {room.roomNumber}</div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4 flex flex-col flex-1">
+        <div className="flex items-center justify-between mb-3">
+           <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+              <Users size={14} />
+              <span>{room.capacity} Guests</span>
+           </div>
+           <div className={`flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ${
+             room.status === 'Available' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'
+           }`}>
+             <div className={`w-1.5 h-1.5 rounded-full ${room.status === 'Available' ? 'bg-green-500' : 'bg-amber-500'}`} />
+             {room.status || 'Available'}
+           </div>
+        </div>
+
+        <div className="flex gap-2 mb-4">
+            <div className="p-1.5 bg-slate-50 rounded text-slate-400" title="Bed"><BedDouble size={14} /></div>
+            {room.type === 'AC' && <div className="p-1.5 bg-blue-50 text-blue-400 rounded" title="AC"><Snowflake size={14} /></div>}
+            <div className="p-1.5 bg-slate-50 rounded text-slate-400" title="Wifi"><Wifi size={14} /></div>
+            <div className="p-1.5 bg-slate-50 rounded text-slate-400" title="Bath"><Bath size={14} /></div>
+        </div>
+
+        <div className="mt-auto pt-3 border-t border-slate-100 flex justify-between items-end">
+          <div>
+            <div className="text-[10px] text-slate-400 font-bold uppercase">Per Year</div>
+            <div className="text-sm font-bold text-slate-900">
+              ₹{room.pricingPlans?.[0]?.price.toLocaleString() || 'N/A'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Hover Actions Overlay */}
+      <div className={`absolute inset-0 bg-slate-900/80 backdrop-blur-[2px] flex items-center justify-center gap-3 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+         <button 
+           onClick={onDiscount} 
+           className="w-10 h-10 rounded-full bg-white text-indigo-600 flex items-center justify-center hover:bg-indigo-50 hover:scale-110 transition-all shadow-lg"
+           title="Offers"
+          >
+           <Tag size={18} />
+         </button>
+         <button 
+           onClick={onDelete}
+           className="w-10 h-10 rounded-full bg-white text-red-500 flex items-center justify-center hover:bg-red-50 hover:scale-110 transition-all shadow-lg"
+           title="Delete"
+          >
+           <Trash2 size={18} />
+         </button>
+      </div>
     </div>
   );
 }
@@ -294,11 +401,11 @@ function AddRoomForm({ floor, onRoomAdded }) {
 // --- ( 3 ) MAIN COMPONENT ---
 function HostelManager() {
   const [structure, setStructure] = useState([]);
-  const [discounts, setDiscounts] = useState([]); // Discount Library
+  const [discounts, setDiscounts] = useState([]);
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [showWizard, setShowWizard] = useState(false);
-
-  // Modal State for Discount
+  const [showAddRoom, setShowAddRoom] = useState(false);
+  const [selectedFloor, setSelectedFloor] = useState(null);
   const [discountModalOpen, setDiscountModalOpen] = useState(false);
   const [targetRoom, setTargetRoom] = useState(null);
 
@@ -306,7 +413,7 @@ function HostelManager() {
     try {
       const [structRes, discRes] = await Promise.all([
         apiClient.get('/rooms/structure'),
-        apiClient.get('/discounts') // Fetch discount rules
+        apiClient.get('/discounts')
       ]);
       
       setStructure(structRes.data);
@@ -320,161 +427,306 @@ function HostelManager() {
       }
     } catch (err) { console.error(err); }
   };
+
   useEffect(() => { fetchData(); }, []);
 
-  // --- HANDLER: APPLY DISCOUNT ---
   const handleApplyDiscount = async (discountId) => {
     try {
       await apiClient.put(`/rooms/apply-discount/${targetRoom._id}`, { discountId });
       alert("Discount Updated!");
       setDiscountModalOpen(false);
-      fetchData(); // Refresh UI
+      fetchData();
     } catch (err) { alert("Failed to apply discount"); }
   };
 
-  const openDiscountModal = (e, room) => {
-    e.stopPropagation(); // Prevent triggering other clicks
+  const openDiscountModal = (room) => {
     setTargetRoom(room);
     setDiscountModalOpen(true);
   };
 
   const handleDeleteBlock = async (block) => {
     if (!window.confirm(`Delete ${block.name}?`)) return;
-    try { await apiClient.delete(`/blocks/${block._id}`); setActiveBlockId(null); fetchData(); } catch (err) { alert('Error'); }
+    try { 
+      await apiClient.delete(`/blocks/${block._id}`); 
+      setActiveBlockId(null); 
+      fetchData(); 
+    } catch (err) { alert('Error'); }
   };
+
   const handleDeleteRoom = async (roomId) => {
-    if(!window.confirm("Delete?")) return;
-    try { await apiClient.delete(`/rooms/${roomId}`); fetchData(); } catch (err) { alert("Error"); }
-  }
+    if(!window.confirm("Delete room?")) return;
+    try { 
+      await apiClient.delete(`/rooms/${roomId}`); 
+      fetchData(); 
+    } catch (err) { alert("Error"); }
+  };
+
   const handleDeleteFloor = async (floor) => {
-     if (!window.confirm("Delete floor?")) return;
-     try { await apiClient.delete(`/floors/${floor._id}`); fetchData(); } catch(e) { alert("Error"); }
-  }
+    if (!window.confirm("Delete floor?")) return;
+    try { 
+      await apiClient.delete(`/floors/${floor._id}`); 
+      fetchData(); 
+    } catch(e) { alert("Error"); }
+  };
 
   const getActiveBlockData = () => structure.find(b => b._id === activeBlockId);
+  const activeBlock = getActiveBlockData();
+
+  // Calculate stats
+  const totalRooms = structure.reduce((sum, block) => 
+    sum + block.floors.reduce((fsum, floor) => fsum + floor.rooms.length, 0), 0
+  );
+  const totalBlocks = structure.length;
+  const totalFloors = structure.reduce((sum, block) => sum + block.floors.length, 0);
+  const totalDiscounts = discounts.length;
 
   return (
-    <div className="container mx-auto p-6 text-white min-h-screen">
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Hostel Manager</h1>
-        <button 
-          onClick={() => setShowWizard(!showWizard)} 
-          className={`rounded px-4 py-2 font-bold shadow-lg transition ${showWizard ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
-        >
-          {showWizard ? 'Cancel Creation' : '+ Add New Block'}
-        </button>
-      </div>
-
-      {showWizard && (
-        <CreateBlockWizard onBlockCreated={(id) => fetchData(id)} />
-      )}
-
-      {!showWizard && (
-        <>
-          <div className="mb-6 flex space-x-2 overflow-x-auto pb-2">
-            {structure.map(block => (
-              <div key={block._id} className="flex rounded shadow-md">
-                <button onClick={() => setActiveBlockId(block._id)} className={`px-6 py-2 font-bold transition ${activeBlockId === block._id ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'}`}>{block.name}</button>
-                <button onClick={() => handleDeleteBlock(block)} className="bg-gray-900 px-3 text-gray-500 hover:bg-red-900 hover:text-white">&times;</button>
+    <AdminLayout>
+      <div className="min-h-screen bg-slate-50">
+        {/* Header Bar */}
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                <Building2 className="text-indigo-600" size={24} />
               </div>
-            ))}
-            {structure.length === 0 && <p className="text-gray-500 mt-2">No blocks. Click "+ Add New Block" to start.</p>}
+              <div>
+                <h1 className="text-xl font-bold text-slate-900">Hostel Management</h1>
+                <p className="text-xs text-slate-500">Manage blocks, floors, and rooms</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowWizard(true)} 
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+            >
+              <Plus size={18} />
+              New Property
+            </button>
+          </div>
+        </header>
+
+        <div className="p-6 space-y-6">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase">Total Rooms</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{totalRooms}</p>
+                </div>
+                <div className="p-3 bg-indigo-50 rounded-lg">
+                  <BedDouble className="text-indigo-600" size={20} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase">Properties</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{totalBlocks}</p>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <Building2 className="text-purple-600" size={20} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase">Total Floors</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{totalFloors}</p>
+                </div>
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <Layers className="text-blue-600" size={20} />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-slate-500 uppercase">Active Offers</p>
+                  <p className="text-2xl font-bold text-slate-900 mt-1">{totalDiscounts}</p>
+                </div>
+                <div className="p-3 bg-emerald-50 rounded-lg">
+                  <Tag className="text-emerald-600" size={20} />
+                </div>
+              </div>
+            </div>
           </div>
 
-          {getActiveBlockData() && (
-            <div className="space-y-6 animate-fade-in">
-              {getActiveBlockData().floors.map(floor => (
-                <div key={floor._id} className={`rounded-lg p-4 shadow-lg border border-gray-700 ${floor.type === 'AC' ? 'bg-blue-900/20' : 'bg-gray-800'}`}>
-                  <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
-                    <div>
-                      <h3 className="text-xl font-bold text-white">{floor.name}</h3>
-                      <span className={`text-xs px-2 py-0.5 rounded uppercase font-bold ml-2 ${floor.type === 'AC' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-gray-300'}`}>
-                        {floor.type} Floor
-                      </span>
+          {/* Property Selector Pills */}
+          {structure.length > 0 && (
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                {structure.map(block => (
+                  <div
+                    key={block._id}
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                      activeBlockId === block._id
+                        ? 'bg-indigo-600 text-white shadow-md'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                  >
+                    <div 
+                      onClick={() => setActiveBlockId(block._id)}
+                      className="flex items-center gap-2 cursor-pointer flex-1"
+                    >
+                      <Building2 size={16} />
+                      {block.name}
                     </div>
-                    <button onClick={() => handleDeleteFloor(floor)} className="text-xs text-red-400 hover:text-red-300">Delete</button>
+                    {activeBlockId === block._id && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteBlock(block); }}
+                        className="ml-1 p-0.5 hover:bg-white/20 rounded transition-colors"
+                        aria-label="Delete block"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
                   </div>
-                  
-                  <div className="flex flex-wrap gap-3">
-                    {floor.rooms.map(room => (
-                      <div key={room._id} className={`relative group rounded p-3 text-center shadow-md min-w-[100px] border transition hover:scale-105 cursor-pointer 
-                        ${room.isStaffRoom ? 'bg-purple-900/80 border-purple-500' : room.activeDiscount ? 'border-green-500 bg-green-900/20' : 'bg-gray-700 border-gray-600'}`}>
-                        
-                        {/* Discount Badge */}
-                        {room.activeDiscount && (
-                          <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap z-10">
-                            {room.activeDiscount.type === 'Fixed' ? `-₹${room.activeDiscount.value}` : `-${room.activeDiscount.value}%`}
-                          </div>
-                        )}
+                ))}
+              </div>
+            </div>
+          )}
 
-                        <div className="font-bold text-white text-lg mt-1">{room.roomNumber}</div>
-                        <div className="text-xs text-gray-300 mb-1 uppercase">{room.isStaffRoom ? (room.staffRole || 'Staff') : `${room.capacity} Bed`}</div>
-                        
-                        {/* Action Buttons */}
-                        <div className="flex justify-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {!room.isStaffRoom && (
-                            <button 
-                              onClick={(e) => openDiscountModal(e, room)}
-                              className="bg-blue-600 p-1 rounded hover:bg-blue-500 text-white text-sm"
-                              title="Apply Discount"
-                            >
-                              🏷️
-                            </button>
-                          )}
-                          <button 
-                            onClick={(e) => { e.stopPropagation(); handleDeleteRoom(room._id); }} 
-                            className="bg-red-600 p-1 rounded hover:bg-red-500 text-white text-sm"
-                            title="Delete Room"
-                          >
-                            🗑️
-                          </button>
-                        </div>
+          {structure.length === 0 && !showWizard && (
+            <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg p-12 text-center">
+              <Building2 className="mx-auto mb-4 text-slate-400" size={48} />
+              <h3 className="text-lg font-semibold text-slate-700 mb-2">No Properties Yet</h3>
+              <p className="text-slate-500 mb-4">Create your first property to get started</p>
+              <button 
+                onClick={() => setShowWizard(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              >
+                <Plus size={18} />
+                Create Property
+              </button>
+            </div>
+          )}
+
+          {/* Floors and Rooms */}
+          {activeBlock && (
+            <div className="space-y-6">
+              {activeBlock.floors.map(floor => (
+                <div key={floor._id} className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                  {/* Floor Header */}
+                  <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        floor.type === 'AC' 
+                          ? 'bg-blue-100 text-blue-600' 
+                          : 'bg-slate-200 text-slate-600'
+                      }`}>
+                        {floor.type === 'AC' ? <Snowflake size={20} /> : <Home size={20} />}
                       </div>
-                    ))}
-                    {floor.rooms.length === 0 && <span className="text-gray-500 italic text-sm py-2">No rooms.</span>}
+                      <div>
+                        <h3 className="font-semibold text-slate-900">{floor.name}</h3>
+                        <p className="text-xs text-slate-500">{floor.rooms.length} rooms</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => { setSelectedFloor(floor); setShowAddRoom(true); }}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg font-medium transition-colors"
+                      >
+                        <Plus size={16} />
+                        Add Room
+                      </button>
+                      <button
+                        onClick={() => handleDeleteFloor(floor)}
+                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </div>
 
-                  <AddRoomForm floor={floor} onRoomAdded={() => fetchData()} />
+                  {/* Room Cards Grid */}
+                  <div className="p-4">
+                    {floor.rooms.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        {floor.rooms.map(room => (
+                          <RoomCard
+                            key={room._id}
+                            room={room}
+                            onDelete={() => handleDeleteRoom(room._id)}
+                            onDiscount={() => openDiscountModal(room)}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-slate-400">
+                        <BedDouble className="mx-auto mb-2 opacity-50" size={32} />
+                        <p className="text-sm">No rooms yet. Add your first room.</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
-        </>
-      )}
-
-      {/* --- DISCOUNT SELECTION MODAL --- */}
-      {discountModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50" onClick={() => setDiscountModalOpen(false)}>
-          <div className="bg-gray-800 p-6 rounded-lg w-80 border border-gray-600 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-bold mb-4 text-white">Apply Discount to {targetRoom?.roomNumber}</h3>
-            
-            <div className="space-y-2 max-h-60 overflow-y-auto">
-              <button 
-                onClick={() => handleApplyDiscount(null)}
-                className="w-full p-2 text-left rounded hover:bg-gray-700 text-gray-400 border border-transparent hover:border-gray-500"
-              >
-                🚫 Remove Discount
-              </button>
-
-              {discounts.map(d => (
-                <button 
-                  key={d._id}
-                  onClick={() => handleApplyDiscount(d._id)}
-                  className="w-full p-2 text-left rounded bg-gray-700 hover:bg-green-900/50 border border-gray-600 hover:border-green-500 text-white transition"
-                >
-                  <div className="font-bold">{d.name}</div>
-                  <div className="text-xs text-green-400">
-                    {d.type === 'Fixed' ? `₹${d.value} OFF` : `${d.value}% OFF`}
-                  </div>
-                </button>
-              ))}
-            </div>
-            
-            <button onClick={() => setDiscountModalOpen(false)} className="mt-4 w-full bg-gray-600 py-2 rounded text-white hover:bg-gray-700">Cancel</button>
-          </div>
         </div>
+      </div>
+
+      {/* Modals */}
+      {showWizard && (
+        <CreateBlockWizard
+          onClose={() => setShowWizard(false)}
+          onCreated={(id) => fetchData(id)}
+        />
       )}
-    </div>
+
+      {showAddRoom && selectedFloor && (
+        <AddRoomModal
+          floor={selectedFloor}
+          onClose={() => { setShowAddRoom(false); setSelectedFloor(null); }}
+          onSuccess={() => { fetchData(); setShowAddRoom(false); setSelectedFloor(null); }}
+        />
+      )}
+
+      {discountModalOpen && targetRoom && (
+        <Modal
+          isOpen={discountModalOpen}
+          onClose={() => setDiscountModalOpen(false)}
+          title={`Apply Discount - Room ${targetRoom.roomNumber}`}
+        >
+          <div className="space-y-3">
+            <button 
+              onClick={() => handleApplyDiscount(null)}
+              className="w-full p-3 text-left rounded-lg bg-slate-50 hover:bg-red-50 border border-slate-200 hover:border-red-300 transition-all"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <X className="text-red-600" size={16} />
+                </div>
+                <span className="font-medium text-slate-700">Remove Discount</span>
+              </div>
+            </button>
+
+            {discounts.map(d => (
+              <button 
+                key={d._id}
+                onClick={() => handleApplyDiscount(d._id)}
+                className="w-full p-3 text-left rounded-lg bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-300 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-slate-800">{d.name}</div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      {d.type === 'Fixed' ? `₹${d.value} OFF` : `${d.value}% OFF`}
+                    </div>
+                  </div>
+                  <Tag className="text-emerald-600" size={18} />
+                </div>
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+    </AdminLayout>
   );
 }
 

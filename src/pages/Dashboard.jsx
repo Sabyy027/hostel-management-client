@@ -1,31 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/axios';
+import { Users, BedDouble, AlertCircle, DollarSign, TrendingUp, Activity, LogOut, Bell, CreditCard, ShoppingBag } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import NotificationBell from '../components/NotificationBell';
+import AdminLayout from '../components/AdminLayout';
+import StudentLayout from '../components/StudentLayout';
 
 function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
-  const [hasBooking, setHasBooking] = useState(false);
+  
+  // --- STATE ---
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasBooking, setHasBooking] = useState(false);
 
-  // --- HELPER: DETERMINE DISPLAY TITLE ---
-  // If designation exists (e.g. "Resident Tutor"), use it. Otherwise use role.
-  const displayRole = user.designation || user.role;
-
-  // --- FETCH BOOKING STATUS (For Students) ---
+  // --- FETCH DATA ---
   useEffect(() => {
-    if (user.role === 'student') {
-      apiClient.get('/bookings/my')
-        .then(res => {
-          // If they have a valid booking ID, they are "Booked"
-          if (res.data && res.data._id) setHasBooking(true);
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
-    } else {
-      setLoading(false); // Staff/Admin don't need this check
-    }
+    const loadData = async () => {
+      try {
+        // 1. Fetch Global Stats (Admin View)
+        if (user.role === 'admin' || user.role === 'warden' || user.role === 'resident tutor') {
+          const res = await apiClient.get('/reports/dashboard-stats');
+          setStats(res.data);
+        }
+        
+        // 2. Check Booking (Student View)
+        if (user.role === 'student') {
+          const bookingRes = await apiClient.get('/bookings/my');
+          if (bookingRes.data && bookingRes.data._id) setHasBooking(true);
+        }
+      } catch (err) {
+        console.error("Dashboard Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, [user.role]);
 
   const handleLogout = () => {
@@ -34,150 +46,311 @@ function Dashboard() {
     navigate('/login');
   };
 
-  if (loading) return <div className="p-20 text-white text-center">Loading Dashboard...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">Loading Dashboard...</div>;
+
+  // --- 1. STUDENT VIEW (With Sidebar Layout) ---
+  if (user.role === 'student') {
+    return (
+      <StudentLayout>
+        <div className="space-y-6">
+          {/* Welcome Header */}
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">Dashboard</h2>
+            <p className="text-slate-500">Your hostel overview and quick actions</p>
+          </div>
+
+          {/* Booking Status Banner */}
+          {!hasBooking ? (
+            <div className="relative overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 rounded-xl shadow-lg">
+                <div className="flex items-start justify-between relative z-10">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full animate-pulse">
+                        ACTION REQUIRED
+                      </span>
+                    </div>
+                    <h3 className="text-3xl font-bold mb-2">🏠 Book Your Room First!</h3>
+                    <p className="text-indigo-100 mb-2 max-w-lg">
+                      Welcome to HostelHub! To unlock all features and services, you need to complete your room booking.
+                    </p>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4 max-w-lg">
+                      <p className="text-sm text-indigo-50 font-semibold mb-2">🔒 Locked Features:</p>
+                      <ul className="text-sm text-indigo-100 space-y-1">
+                        <li>• Maintenance & Complaints</li>
+                        <li>• Payment & Billing</li>
+                        <li>• Additional Services (WiFi, Mess, etc.)</li>
+                        <li>• Profile Management</li>
+                      </ul>
+                    </div>
+                    <Link 
+                      to="/my-booking" 
+                      className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 rounded-lg font-bold hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                    >
+                      <BedDouble size={20} />
+                      Book Your Room Now
+                    </Link>
+                  </div>
+                  <div className="hidden lg:block">
+                    <BedDouble size={120} className="text-white opacity-10" />
+                  </div>
+                </div>
+                {/* Decorative Elements */}
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-purple-500 rounded-full opacity-20 blur-3xl"></div>
+                <div className="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 rounded-full opacity-20 blur-2xl"></div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-3 bg-green-50 rounded-lg">
+                  <BedDouble className="text-green-600" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-lg">Your Room</h3>
+                  <p className="text-sm text-slate-500">Active Booking</p>
+                </div>
+              </div>
+              <Link 
+                to="/my-booking" 
+                className="inline-flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700 transition-colors"
+              >
+                View Details →
+              </Link>
+            </div>
+          )}
+
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link 
+              to="/student/complaints" 
+              className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-orange-300 transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-orange-50 text-orange-600 rounded-lg group-hover:bg-orange-100 transition-colors">
+                  <AlertCircle size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">Maintenance</h3>
+                  <p className="text-sm text-slate-500">Raise complaints</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">Report issues with your room or facilities</p>
+            </Link>
+
+            <Link 
+              to="/student/payments" 
+              className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-green-300 transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-green-50 text-green-600 rounded-lg group-hover:bg-green-100 transition-colors">
+                  <DollarSign size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">My Dues</h3>
+                  <p className="text-sm text-slate-500">Pending payments</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">Check and pay your hostel dues</p>
+            </Link>
+
+            <Link 
+              to="/student/payment-history" 
+              className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-blue-50 text-blue-600 rounded-lg group-hover:bg-blue-100 transition-colors">
+                  <CreditCard size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">Payment History</h3>
+                  <p className="text-sm text-slate-500">Transaction records</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">View all your payment history and invoices</p>
+            </Link>
+
+            <Link 
+              to="/student/services" 
+              className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-purple-300 transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-purple-50 text-purple-600 rounded-lg group-hover:bg-purple-100 transition-colors">
+                  <ShoppingBag size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">Services</h3>
+                  <p className="text-sm text-slate-500">Additional services</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">Purchase WiFi, food packages, and more</p>
+            </Link>
+
+            <Link 
+              to="/profile" 
+              className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md hover:border-indigo-300 transition-all group"
+            >
+              <div className="flex items-center gap-4 mb-3">
+                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg group-hover:bg-indigo-100 transition-colors">
+                  <Users size={24} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800">Profile</h3>
+                  <p className="text-sm text-slate-500">Manage account</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">Update your personal information</p>
+            </Link>
+          </div>
+
+          {/* Info Section */}
+          {hasBooking && (
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 p-6 rounded-xl">
+              <h3 className="font-bold text-slate-800 mb-3">Need Help?</h3>
+              <p className="text-sm text-slate-600 mb-4">
+                If you have any questions or need assistance, feel free to contact the hostel administration or raise a maintenance ticket.
+              </p>
+              <div className="flex gap-3">
+                <Link 
+                  to="/student/complaints" 
+                  className="px-4 py-2 bg-white text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors border border-slate-200"
+                >
+                  Report Issue
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </StudentLayout>
+    );
+  }
+
+  // --- 2. ADMIN / WARDEN VIEW (The Beautiful Dashboard) ---
+  // Data Preparation
+  const occupancyData = stats ? [
+    { name: 'Occupied', value: stats.occupancy.occupied },
+    { name: 'Available', value: stats.occupancy.total - stats.occupancy.occupied },
+  ] : [];
 
   return (
-    <div className="flex h-screen flex-col items-center bg-gray-900 text-white p-6">
-      <div className="w-full max-w-4xl">
-        
-        {/* HEADER */}
-        <div className="flex justify-between items-center mb-8 bg-gray-800 p-6 rounded-xl shadow-lg">
-          <div>
-            <h1 className="text-3xl font-bold">Welcome, {user.username}</h1>
-            {/* --- FIX 1: DISPLAY DESIGNATION INSTEAD OF ROLE --- */}
-            <p className="text-gray-400 uppercase text-sm tracking-widest font-semibold">
-              {displayRole}
-            </p>
-            {/* -------------------------------------------------- */}
-          </div>
-          <div className="flex items-center gap-4">
-            <NotificationBell />
-            <button onClick={handleLogout} className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm font-bold">Logout</button>
-          </div>
+    <AdminLayout>
+      <div className="space-y-6 animate-fade-in">
+      
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
+          <p className="text-slate-500">Welcome back, here's what's happening today.</p>
         </div>
-
-        {/* --- ROLE BASED MENU GRID --- */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-          {/* ============================================================
-              1. STUDENT FLOW
-          ============================================================ */}
-          {user.role === 'student' && (
-            <>
-              {/* STEP 1: BOOKING (Always Visible) */}
-              <Link to="/my-booking" className={`p-6 rounded-xl shadow-lg transition transform hover:scale-105 ${hasBooking ? 'bg-blue-900 border border-blue-500' : 'bg-green-600'}`}>
-                <h2 className="text-xl font-bold mb-2">{hasBooking ? 'My Room Details' : 'Book a Room'}</h2>
-                <p className="text-sm opacity-80">{hasBooking ? 'View your room info & invoice' : 'Start here to get your room!'}</p>
-              </Link>
-
-              {/* STEP 2: FEATURES (Only Visible IF Booked) */}
-              {hasBooking ? (
-                <>
-                  <Link to="/student/complaints" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-750 border-t-4 border-yellow-500">
-                    <h2 className="text-xl font-bold mb-2">Maintenance</h2>
-                    <p className="text-sm text-gray-400">Raise a complaint</p>
-                  </Link>
-
-                  <Link to="/student/services" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-750 border-t-4 border-purple-500">
-                    <h2 className="text-xl font-bold mb-2">Add-on Services</h2>
-                    <p className="text-sm text-gray-400">Wifi, Food, & More</p>
-                  </Link>
-
-                  <Link to="/student/payments" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-750 border-t-4 border-green-500">
-                    <h2 className="text-xl font-bold mb-2">Payment History</h2>
-                    <p className="text-sm text-gray-400">Download Invoices</p>
-                  </Link>
-
-                  <Link to="/student/dues" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-750 border-t-4 border-red-500">
-                    <h2 className="text-xl font-bold mb-2">My Dues</h2>
-                    <p className="text-sm text-gray-400">Pay Pending Fines</p>
-                  </Link>
-                  
-                  <Link to="/my-profile" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-750">
-                    <h2 className="text-xl font-bold mb-2">My Profile</h2>
-                    <p className="text-sm text-gray-400">Update Personal Info</p>
-                  </Link>
-                </>
-              ) : (
-                <div className="col-span-2 bg-gray-800/50 border border-dashed border-gray-600 p-8 rounded-xl flex items-center justify-center text-gray-500">
-                  <span>🔒 Book a room to unlock Services, Maintenance, and Profile.</span>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* ============================================================
-              2. STAFF FLOW (Maintenance Only)
-          ============================================================ */}
-          {user.role === 'staff' && (
-            <Link to="/staff/dashboard" className="bg-blue-600 p-8 rounded-xl shadow-lg col-span-3 text-center hover:bg-blue-700 transition">
-              <h2 className="text-3xl font-bold mb-2">My Work Dashboard</h2>
-              <p className="text-blue-100">View and Update Assigned Tasks</p>
-            </Link>
-          )}
-
-          {/* ============================================================
-              3. WARDEN FLOW (Manager Pages)
-          ============================================================ */}
-          {/* Check for 'warden' OR 'admin' so Admins see these too */}
-          {(user.role === 'warden' || user.role === 'admin') && (
-            <>
-              {/* --- FIX 2: DYNAMIC SECTION HEADER --- */}
-              <div className="col-span-3 text-gray-400 text-sm font-bold uppercase mt-4 mb-2 border-b border-gray-700 pb-1">
-                 {user.role === 'admin' ? 'Supervision' : `${displayRole} Management`}
-              </div>
-              {/* ------------------------------------- */}
-              
-              <Link to="/admin/residents" className="bg-teal-700 p-6 rounded-xl shadow-lg hover:bg-teal-600">
-                <h2 className="text-xl font-bold mb-2">Resident Management</h2>
-                <p className="text-sm text-teal-200">360° View & Check-in/out</p>
-              </Link>
-              <Link to="/admin/occupancy" className="bg-indigo-700 p-6 rounded-xl shadow-lg hover:bg-indigo-600">
-                <h2 className="text-xl font-bold mb-2">Occupancy Dashboard</h2>
-                <p className="text-sm text-indigo-200">Visual Room Map</p>
-              </Link>
-              <Link to="/admin/maintenance" className="bg-gray-800 p-6 rounded-xl shadow-lg hover:bg-gray-700 border-l-4 border-yellow-500">
-                <h2 className="text-xl font-bold mb-2">Maintenance Overview</h2>
-                <p className="text-sm text-gray-400">View All Tickets</p>
-              </Link>
-            </>
-          )}
-
-          {/* ============================================================
-              4. ADMIN FLOW (Everything)
-          ============================================================ */}
-          {user.role === 'admin' && (
-            <>
-              {/* Structure & Rooms */}
-              <div className="col-span-3 text-gray-400 text-sm font-bold uppercase mt-4 mb-2 border-b border-gray-700 pb-1">Setup & Infrastructure</div>
-              <Link to="/admin/structure" className="bg-purple-900/40 border border-purple-600 p-6 rounded-xl hover:bg-purple-900/60">
-                <h2 className="text-lg font-bold">Hostel Structure</h2>
-                <p className="text-xs text-gray-400">Create Blocks, Floors, Rooms</p>
-              </Link>
-              
-              {/* People & Operations */}
-              <div className="col-span-3 text-gray-400 text-sm font-bold uppercase mt-4 mb-2 border-b border-gray-700 pb-1">Operations</div>
-              <Link to="/admin/staff" className="bg-gray-800 p-6 rounded-xl hover:bg-gray-700">
-                <h2 className="text-lg font-bold">Manage Staff</h2>
-              </Link>
-
-              {/* Finance */}
-              <div className="col-span-3 text-gray-400 text-sm font-bold uppercase mt-4 mb-2 border-b border-gray-700 pb-1">Finance</div>
-              <Link to="/admin/billing-tools" className="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 border-b-4 border-green-600">
-                <h2 className="text-lg font-bold">Billing & Services</h2>
-              </Link>
-              <Link to="/admin/expenses" className="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 border-b-4 border-orange-600">
-                <h2 className="text-lg font-bold">Expense Manager</h2>
-              </Link>
-              <Link to="/admin/reports" className="bg-gray-800 p-6 rounded-xl hover:bg-gray-700 border-b-4 border-blue-600">
-                <h2 className="text-lg font-bold">Financial Reports</h2>
-              </Link>
-            </>
-          )}
-
+        <div className="flex gap-2">
+           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center gap-1">
+               <Activity size={14} /> System Operational
+           </span>
         </div>
       </div>
-    </div>
+
+      {/* Stats Grid */}
+      {stats && (
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${(user.role === 'warden' || user.role === 'resident tutor') ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6 mb-8`}>
+            
+            {/* Card 1: Occupancy */}
+            <Link to="/admin/occupancy" className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start justify-between hover:shadow-md transition-all hover:-translate-y-1">
+                <div>
+                    <p className="text-sm font-medium text-slate-500">Occupancy Rate</p>
+                    <h3 className="text-3xl font-bold text-slate-800 mt-1">{stats.occupancy.rate}%</h3>
+                    <p className="text-xs text-slate-400 mt-1">{stats.occupancy.occupied} / {stats.occupancy.total} Beds Filled</p>
+                </div>
+                <div className="p-3 bg-blue-50 rounded-lg text-blue-600"><BedDouble size={24} /></div>
+            </Link>
+
+            {/* Card 2: Residents */}
+            <Link to="/admin/residents" className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start justify-between hover:shadow-md transition-all hover:-translate-y-1">
+                <div>
+                    <p className="text-sm font-medium text-slate-500">Active Residents</p>
+                    <h3 className="text-3xl font-bold text-slate-800 mt-1">{stats.occupancy.occupied}</h3>
+                    <p className="text-xs text-green-500 mt-1 flex items-center gap-1"><TrendingUp size={12} /> Live Count</p>
+                </div>
+                <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600"><Users size={24} /></div>
+            </Link>
+
+            {/* Card 3: Maintenance */}
+            <Link to="/admin/maintenance" className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start justify-between hover:shadow-md transition-all hover:-translate-y-1">
+                <div>
+                    <p className="text-sm font-medium text-slate-500">Maintenance</p>
+                    <h3 className="text-3xl font-bold text-slate-800 mt-1">Desk</h3>
+                    <p className="text-xs text-slate-400 mt-1">Manage Tickets</p>
+                </div>
+                <div className="p-3 bg-orange-50 rounded-lg text-orange-600"><AlertCircle size={24} /></div>
+            </Link>
+
+            {/* Card 4: Revenue - Only for Admin */}
+            {user.role === 'admin' && (
+              <Link to="/admin/reports" className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start justify-between hover:shadow-md transition-all hover:-translate-y-1">
+                  <div>
+                      <p className="text-sm font-medium text-slate-500">Total Revenue</p>
+                      <h3 className="text-3xl font-bold text-slate-800 mt-1">₹{stats.financials.totalRevenue.toLocaleString()}</h3>
+                      <p className="text-xs text-slate-400 mt-1">Net Profit: ₹{stats.financials.netProfit.toLocaleString()}</p>
+                  </div>
+                  <div className="p-3 bg-indigo-50 rounded-lg text-indigo-600"><DollarSign size={24} /></div>
+              </Link>
+            )}
+
+        </div>
+      )}
+
+      {/* Detail Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Chart Section */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 col-span-2">
+             <h3 className="text-lg font-bold text-slate-800 mb-4">Room Availability Overview</h3>
+             <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    <BarChart layout="vertical" data={occupancyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                        <XAxis type="number" />
+                        <YAxis dataKey="name" type="category" />
+                        <Tooltip />
+                        <Bar dataKey="value" barSize={40}>
+                            {occupancyData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={index === 0 ? '#4f46e5' : '#e2e8f0'} />
+                            ))}
+                        </Bar>
+                    </BarChart>
+                </ResponsiveContainer>
+             </div>
+          </div>
+
+          {/* Quick Links / Actions */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+             <h3 className="text-lg font-bold text-slate-800 mb-4">Quick Actions</h3>
+             <div className="space-y-3">
+                {user.role === 'admin' && (
+                    <>
+                        <Link to="/admin/structure" className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition group">
+                            <span className="font-medium text-slate-700">Hostel Structure</span>
+                            <span className="text-slate-400 group-hover:translate-x-1 transition">→</span>
+                        </Link>
+                        <Link to="/admin/staff" className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition group">
+                            <span className="font-medium text-slate-700">Manage Staff</span>
+                            <span className="text-slate-400 group-hover:translate-x-1 transition">→</span>
+                        </Link>
+                        <Link to="/admin/billing-tools" className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition group">
+                            <span className="font-medium text-slate-700">Billing Tools</span>
+                            <span className="text-slate-400 group-hover:translate-x-1 transition">→</span>
+                        </Link>
+                    </>
+                )}
+                
+                <Link to="/admin/residents" className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition group">
+                     <span className="font-medium text-slate-700">Resident Directory</span>
+                     <span className="text-slate-400 group-hover:translate-x-1 transition">→</span>
+                </Link>
+             </div>
+          </div>
+      </div>
+      </div>
+    </AdminLayout>
   );
 }
 
