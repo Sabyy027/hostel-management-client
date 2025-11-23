@@ -26,7 +26,7 @@ function Signup() {
     try {
       // 6. Send the POST request to your backend
       const response = await axios.post(
-        'http://localhost:4000/api/auth/signup', // Your backend API URL
+        apiClient.defaults.baseURL + '/auth/signup', // Uses axios.js base URL
         signupData,
         {
           headers: {

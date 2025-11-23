@@ -40,7 +40,7 @@ function Login() {
     try {
       // 6. Send the POST request to your login endpoint
       const response = await axios.post(
-        'http://localhost:4000/api/auth/login',
+        apiClient.defaults.baseURL + '/auth/login',
         loginData
       );
 
