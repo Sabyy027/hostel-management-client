@@ -3,14 +3,15 @@ import StudentSidebar from './StudentSidebar';
 import NotificationBell from './NotificationBell';
 import ProfileDropdown from './ProfileDropdown';
 import AIChatbot from './AIChatbot';
-import { Bell, LogOut, Menu, X } from 'lucide-react';
+import StudentMobileMenu from './StudentMobileMenu';
+import { Bell, LogOut, MoreVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const StudentLayout = ({ children }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const hasBooking = localStorage.getItem('hasBooking') === 'true';
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -26,19 +27,9 @@ const StudentLayout = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={`fixed lg:static inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
-        <StudentSidebar onClose={() => setSidebarOpen(false)} />
+      {/* Desktop Sidebar - Always visible on desktop */}
+      <div className="hidden lg:block">
+        <StudentSidebar />
       </div>
 
       {/* Main Content Area */}
@@ -46,13 +37,13 @@ const StudentLayout = ({ children }) => {
         {/* Top Bar */}
         <div className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Mobile Menu Button */}
+            {/* Mobile Three-Dot Menu Button */}
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative"
+              aria-label="Open menu"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              <MoreVertical size={20} />
             </button>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-800">
@@ -98,6 +89,13 @@ const StudentLayout = ({ children }) => {
           {children}
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      <StudentMobileMenu 
+        isOpen={mobileMenuOpen} 
+        onClose={() => setMobileMenuOpen(false)}
+        hasBooking={hasBooking}
+      />
 
       {/* AI Chatbot - Available only after booking */}
       {hasBooking && <AIChatbot />}

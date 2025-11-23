@@ -49,39 +49,10 @@ const StaffLayout = ({ children }) => {
 
   const isActive = (path) => location.pathname === path;
 
-  // Organize menu items into sections for mobile
-  const menuSections = [
-    {
-      title: 'Work',
-      items: menuItems.filter(item => item.section === 'Work')
-    },
-    {
-      title: 'Account',
-      items: menuItems.filter(item => item.section === 'Account')
-    }
-  ];
-
-  const toggleSection = (sectionTitle) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [sectionTitle]: !prev[sectionTitle]
-    }));
-  };
-
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-slate-900 h-screen border-r border-slate-800 flex flex-col transform transition-transform duration-300 ease-in-out ${
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
+      {/* Desktop Sidebar - Always visible on desktop */}
+      <div className="hidden lg:block w-64 bg-slate-900 h-screen border-r border-slate-800 flex flex-col">
         {/* Header */}
         <div className="p-6 border-b border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-3">
@@ -97,8 +68,7 @@ const StaffLayout = ({ children }) => {
 
         {/* Main Menu */}
         <div className="flex-1 py-6 px-4 overflow-y-auto">
-          {/* Desktop: Simple List */}
-          <div className="hidden lg:block space-y-1">
+          <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
@@ -107,7 +77,6 @@ const StaffLayout = ({ children }) => {
                 <Link
                   key={item.path}
                   to={item.path}
-                  onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
                     active
                       ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/30'
@@ -120,64 +89,6 @@ const StaffLayout = ({ children }) => {
                   />
                   <span className="font-medium text-sm">{item.label}</span>
                 </Link>
-              );
-            })}
-          </div>
-
-          {/* Mobile: Collapsible Sections */}
-          <div className="lg:hidden space-y-2">
-            {menuSections.map((section) => {
-              const isExpanded = expandedSections[section.title] ?? true; // Default expanded on mobile
-              const hasActiveItem = section.items.some(item => isActive(item.path));
-              
-              return (
-                <div key={section.title} className="space-y-1">
-                  {/* Section Header */}
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all ${
-                      hasActiveItem 
-                        ? 'bg-amber-600/20 text-amber-300'
-                        : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
-                    }`}
-                  >
-                    <span className="font-semibold text-xs uppercase tracking-wider">{section.title}</span>
-                    {isExpanded ? (
-                      <ChevronDown size={16} className="text-slate-400" />
-                    ) : (
-                      <ChevronRight size={16} className="text-slate-400" />
-                    )}
-                  </button>
-
-                  {/* Section Items */}
-                  {isExpanded && (
-                    <div className="space-y-1 pl-2">
-                      {section.items.map((item) => {
-                        const Icon = item.icon;
-                        const active = isActive(item.path);
-                        
-                        return (
-                          <Link
-                            key={item.path}
-                            to={item.path}
-                            onClick={() => setSidebarOpen(false)}
-                            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group ${
-                              active
-                                ? 'bg-amber-600 shadow-lg shadow-amber-500/30 text-white'
-                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                            }`}
-                          >
-                            <Icon 
-                              size={18} 
-                              className={active ? 'text-white' : `text-${item.color}-400 group-hover:text-${item.color}-300`}
-                            />
-                            <span className="font-medium text-sm">{item.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
               );
             })}
           </div>
@@ -205,7 +116,6 @@ const StaffLayout = ({ children }) => {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Main Content Area */}
@@ -213,13 +123,13 @@ const StaffLayout = ({ children }) => {
         {/* Top Bar */}
         <div className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between sticky top-0 z-30 flex-shrink-0">
           <div className="flex items-center gap-3 sm:gap-4">
-            {/* Mobile Menu Button */}
+            {/* Mobile Three-Dot Menu Button */}
             <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-              aria-label="Toggle menu"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative"
+              aria-label="Open menu"
             >
-              {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+              <MoreVertical size={20} />
             </button>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-800">
@@ -265,6 +175,12 @@ const StaffLayout = ({ children }) => {
           {children}
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      <StaffMobileMenu 
+        isOpen={mobileMenuOpen} 
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
       {/* AI Chatbot - Available for staff */}
       <AIChatbot />
