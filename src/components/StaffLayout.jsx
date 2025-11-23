@@ -11,7 +11,9 @@ import {
   Bell,
   User,
   Menu,
-  X
+  X,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,6 +22,7 @@ const StaffLayout = ({ children }) => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({});
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -32,17 +35,38 @@ const StaffLayout = ({ children }) => {
       label: 'My Tasks', 
       path: '/staff/dashboard', 
       icon: Wrench,
-      color: 'amber'
+      color: 'amber',
+      section: 'Work'
     },
     { 
       label: 'My Profile', 
       path: '/staff/profile', 
       icon: User,
-      color: 'amber'
+      color: 'amber',
+      section: 'Account'
     },
   ];
 
   const isActive = (path) => location.pathname === path;
+
+  // Organize menu items into sections for mobile
+  const menuSections = [
+    {
+      title: 'Work',
+      items: menuItems.filter(item => item.section === 'Work')
+    },
+    {
+      title: 'Account',
+      items: menuItems.filter(item => item.section === 'Account')
+    }
+  ];
+
+  const toggleSection = (sectionTitle) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionTitle]: !prev[sectionTitle]
+    }));
+  };
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
@@ -73,7 +97,8 @@ const StaffLayout = ({ children }) => {
 
         {/* Main Menu */}
         <div className="flex-1 py-6 px-4 overflow-y-auto">
-          <div className="space-y-1">
+          {/* Desktop: Simple List */}
+          <div className="hidden lg:block space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
@@ -95,6 +120,64 @@ const StaffLayout = ({ children }) => {
                   />
                   <span className="font-medium text-sm">{item.label}</span>
                 </Link>
+              );
+            })}
+          </div>
+
+          {/* Mobile: Collapsible Sections */}
+          <div className="lg:hidden space-y-2">
+            {menuSections.map((section) => {
+              const isExpanded = expandedSections[section.title] ?? true; // Default expanded on mobile
+              const hasActiveItem = section.items.some(item => isActive(item.path));
+              
+              return (
+                <div key={section.title} className="space-y-1">
+                  {/* Section Header */}
+                  <button
+                    onClick={() => toggleSection(section.title)}
+                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all ${
+                      hasActiveItem 
+                        ? 'bg-amber-600/20 text-amber-300'
+                        : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
+                    }`}
+                  >
+                    <span className="font-semibold text-xs uppercase tracking-wider">{section.title}</span>
+                    {isExpanded ? (
+                      <ChevronDown size={16} className="text-slate-400" />
+                    ) : (
+                      <ChevronRight size={16} className="text-slate-400" />
+                    )}
+                  </button>
+
+                  {/* Section Items */}
+                  {isExpanded && (
+                    <div className="space-y-1 pl-2">
+                      {section.items.map((item) => {
+                        const Icon = item.icon;
+                        const active = isActive(item.path);
+                        
+                        return (
+                          <Link
+                            key={item.path}
+                            to={item.path}
+                            onClick={() => setSidebarOpen(false)}
+                            className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group ${
+                              active
+                                ? 'bg-amber-600 shadow-lg shadow-amber-500/30 text-white'
+                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                            }`}
+                          >
+                            <Icon 
+                              size={18} 
+                              className={active ? 'text-white' : `text-${item.color}-400 group-hover:text-${item.color}-300`}
+                            />
+                            <span className="font-medium text-sm">{item.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>

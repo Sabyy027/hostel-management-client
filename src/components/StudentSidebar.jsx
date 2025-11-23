@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, BedDouble, AlertCircle, DollarSign, CreditCard, Settings, User, ShoppingBag, Building2, Lock } from 'lucide-react';
+import { Home, BedDouble, AlertCircle, DollarSign, CreditCard, Settings, User, ShoppingBag, Building2, Lock, ChevronDown, ChevronRight } from 'lucide-react';
 import apiClient from '../api/axios';
 
 const StudentSidebar = ({ onClose }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const navigate = useNavigate();
+  const [expandedSections, setExpandedSections] = useState({});
   
   // Initialize from localStorage to avoid flickering
   const [hasBooking, setHasBooking] = useState(() => {
@@ -58,14 +59,45 @@ const StudentSidebar = ({ onClose }) => {
   }, []);
 
   const menuItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: Home, requiresBooking: true, showOnlyWhenNoBooking: false },
-    { name: 'My Booking', path: '/my-booking', icon: BedDouble, requiresBooking: false, showOnlyWhenNoBooking: true },
-    { name: 'Complaints', path: '/student/complaints', icon: AlertCircle, requiresBooking: true, showOnlyWhenNoBooking: false },
-    { name: 'My Dues', path: '/student/dues', icon: DollarSign, requiresBooking: true, showOnlyWhenNoBooking: false },
-    { name: 'Payment History', path: '/student/payments', icon: CreditCard, requiresBooking: true, showOnlyWhenNoBooking: false },
-    { name: 'Services', path: '/student/services', icon: ShoppingBag, requiresBooking: true, showOnlyWhenNoBooking: false },
-    { name: 'Profile', path: '/my-profile', icon: User, requiresBooking: true, showOnlyWhenNoBooking: false },
+    { name: 'Dashboard', path: '/dashboard', icon: Home, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Overview' },
+    { name: 'My Booking', path: '/my-booking', icon: BedDouble, requiresBooking: false, showOnlyWhenNoBooking: true, section: 'Booking' },
+    { name: 'Complaints', path: '/student/complaints', icon: AlertCircle, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Services' },
+    { name: 'My Dues', path: '/student/dues', icon: DollarSign, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Financial' },
+    { name: 'Payment History', path: '/student/payments', icon: CreditCard, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Financial' },
+    { name: 'Services', path: '/student/services', icon: ShoppingBag, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Services' },
+    { name: 'Profile', path: '/my-profile', icon: User, requiresBooking: true, showOnlyWhenNoBooking: false, section: 'Account' },
   ];
+
+  // Organize menu items into sections for mobile
+  const menuSections = [
+    {
+      title: 'Overview',
+      items: menuItems.filter(item => item.section === 'Overview' && (!item.requiresBooking || hasBooking) && (!item.showOnlyWhenNoBooking || !hasBooking))
+    },
+    {
+      title: 'Booking',
+      items: menuItems.filter(item => item.section === 'Booking' && (!item.requiresBooking || hasBooking) && (!item.showOnlyWhenNoBooking || !hasBooking))
+    },
+    {
+      title: 'Services',
+      items: menuItems.filter(item => item.section === 'Services' && (!item.requiresBooking || hasBooking) && (!item.showOnlyWhenNoBooking || !hasBooking))
+    },
+    {
+      title: 'Financial',
+      items: menuItems.filter(item => item.section === 'Financial' && (!item.requiresBooking || hasBooking) && (!item.showOnlyWhenNoBooking || !hasBooking))
+    },
+    {
+      title: 'Account',
+      items: menuItems.filter(item => item.section === 'Account' && (!item.requiresBooking || hasBooking) && (!item.showOnlyWhenNoBooking || !hasBooking))
+    }
+  ].filter(section => section.items.length > 0); // Only show sections with items
+
+  const toggleSection = (sectionTitle) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionTitle]: !prev[sectionTitle]
+    }));
+  };
 
   return (
     <div className="w-64 bg-slate-900 h-screen border-r border-slate-800 flex flex-col fixed left-0 top-0">
@@ -98,7 +130,8 @@ const StudentSidebar = ({ onClose }) => {
           </div>
         )}
 
-        <div className="space-y-1">
+        {/* Desktop: Simple List */}
+        <div className="hidden lg:block space-y-1">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isLocked = item.requiresBooking && !hasBooking;
@@ -146,6 +179,82 @@ const StudentSidebar = ({ onClose }) => {
                 <Icon size={20} className="flex-shrink-0" />
                 <span className="font-medium text-sm">{item.name}</span>
               </NavLink>
+            );
+          })}
+        </div>
+
+        {/* Mobile: Collapsible Sections */}
+        <div className="lg:hidden space-y-2">
+          {menuSections.map((section) => {
+            const isExpanded = expandedSections[section.title] ?? true; // Default expanded on mobile
+            const hasActiveItem = section.items.some(item => {
+              const path = item.path;
+              return location.pathname === path;
+            });
+            
+            return (
+              <div key={section.title} className="space-y-1">
+                {/* Section Header */}
+                <button
+                  onClick={() => toggleSection(section.title)}
+                  className={`w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition-all ${
+                    hasActiveItem 
+                      ? 'bg-indigo-600/20 text-indigo-300'
+                      : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50'
+                  }`}
+                >
+                  <span className="font-semibold text-xs uppercase tracking-wider">{section.title}</span>
+                  {isExpanded ? (
+                    <ChevronDown size={16} className="text-slate-400" />
+                  ) : (
+                    <ChevronRight size={16} className="text-slate-400" />
+                  )}
+                </button>
+
+                {/* Section Items */}
+                {isExpanded && (
+                  <div className="space-y-1 pl-2">
+                    {section.items.map((item) => {
+                      const Icon = item.icon;
+                      const isLocked = item.requiresBooking && !hasBooking;
+                      
+                      if (isLocked) {
+                        return (
+                          <div
+                            key={item.path}
+                            className="flex items-center justify-between px-4 py-2.5 rounded-lg text-slate-500 cursor-not-allowed opacity-50"
+                            title="Complete your booking to unlock this feature"
+                          >
+                            <div className="flex items-center gap-3">
+                              <Icon size={18} className="flex-shrink-0" />
+                              <span className="font-medium text-sm">{item.name}</span>
+                            </div>
+                            <Lock size={14} className="text-slate-600" />
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => onClose && onClose()}
+                          className={({ isActive }) =>
+                            `flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all group ${
+                              isActive
+                                ? 'bg-indigo-600 shadow-lg shadow-indigo-500/30 text-white'
+                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                            }`
+                          }
+                        >
+                          <Icon size={18} className="flex-shrink-0" />
+                          <span className="font-medium text-sm">{item.name}</span>
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>
