@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Building2, Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import apiClient from '../api/axios';
 
 function ResetPassword() {
   const { token } = useParams();

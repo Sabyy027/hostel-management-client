@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import { Home, Building2, Users, ShieldCheck, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react'; 
+import apiClient from '../api/axios';
 
 function Login() {
   const [email, setEmail] = useState('');

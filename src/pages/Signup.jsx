@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import { Home, Users, UserPlus, Mail, Lock, User } from 'lucide-react';
+import apiClient from '../api/axios';
 
 function Signup() {
   const [username, setUsername] = useState('');
