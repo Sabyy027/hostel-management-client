@@ -1,34 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import { Home, Building2, Users, ShieldCheck, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react'; 
+import { Building2, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react'; 
 import apiClient from '../api/axios';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // 3. Add loading and error states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate(); // 4. Get the navigate function
-
-  // Hostel images carousel
-  const hostelImages = [
-    'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80', // Modern hostel room
-    'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&q=80', // Hostel common area
-    'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80', // Student studying
-  ];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % hostelImages.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   // 5. Make the submit handler async
   const handleSubmit = async (e) => {
@@ -96,83 +81,26 @@ function Login() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      {/* Left Side - Image Carousel */}
+      {/* Left Side - Branding Panel (Desktop) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
-
-        {/* Image Carousel */}
+        {/* Branding Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-16">
-          <div className="mb-12">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                <Building2 className="text-white" size={32} />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">HMS</h1>
-                <p className="text-indigo-100 text-sm">Hostel Management System</p>
+          <div className="flex flex-col items-center">
+            {/* Rounded Square Icon with Building */}
+            <div className="mb-8">
+              <div className="w-24 h-24 bg-indigo-500/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl">
+                <Building2 className="text-white" size={48} />
               </div>
             </div>
-          </div>
-
-          {/* Image Slider */}
-          <div className="relative w-full max-w-lg">
-            <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
-              {hostelImages.map((img, index) => (
-                <div
-                  key={index}
-                  className={`absolute inset-0 transition-opacity duration-1000 ${
-                    index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-                  }`}
-                >
-                  <img
-                    src={img}
-                    alt={`Hostel ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                </div>
-              ))}
-            </div>
-
-            {/* Image Indicators */}
-            <div className="flex justify-center gap-2 mt-6">
-              {hostelImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === currentImageIndex
-                      ? 'w-8 bg-white'
-                      : 'w-2 bg-white/40 hover:bg-white/60'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Features */}
-          <div className="mt-16 grid grid-cols-3 gap-6 w-full max-w-lg">
+            
+            {/* HMS Text */}
             <div className="text-center">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Users className="text-white" size={24} />
-              </div>
-              <p className="text-white text-sm font-medium">500+ Students</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Building2 className="text-white" size={24} />
-              </div>
-              <p className="text-white text-sm font-medium">Modern Facilities</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mx-auto mb-3">
-                <ShieldCheck className="text-white" size={24} />
-              </div>
-              <p className="text-white text-sm font-medium">24/7 Security</p>
+              <h1 className="text-6xl font-bold text-white mb-4 tracking-tight">
+                HMS
+              </h1>
+              <p className="text-xl text-indigo-100 font-medium">
+                Hostel Management System
+              </p>
             </div>
           </div>
         </div>
@@ -181,23 +109,39 @@ function Login() {
       {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-md">
-          {/* Logo for mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-              <Building2 className="text-indigo-600" size={32} />
+          {/* Branding Panel for Mobile */}
+          <div className="lg:hidden mb-8">
+            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 sm:p-8 text-center">
+              <div className="flex flex-col items-center">
+                {/* Rounded Square Icon with Building */}
+                <div className="mb-4 sm:mb-6">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-500/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl mx-auto">
+                    <Building2 className="text-white w-8 h-8 sm:w-10 sm:h-10" />
+                  </div>
+                </div>
+                
+                {/* HMS Text */}
+                <div>
+                  <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 tracking-tight">
+                    HMS
+                  </h1>
+                  <p className="text-base sm:text-lg text-indigo-100 font-medium">
+                    Hostel Management System
+                  </p>
+                </div>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800">HMS</h2>
           </div>
 
           {/* Header */}
           <div className="mb-8 text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 rounded-full mb-4">
+            <div className="hidden lg:flex inline-flex items-center justify-center w-14 h-14 bg-indigo-100 rounded-full mb-4">
               <LogIn className="w-7 h-7 text-indigo-600" />
             </div>
-            <h2 className="text-3xl font-bold text-slate-800 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
               Welcome Back
             </h2>
-            <p className="text-slate-500">Sign in to your hostel account</p>
+            <p className="text-sm sm:text-base text-slate-500">Sign in to your hostel account</p>
           </div>
 
           {/* Main Card */}
