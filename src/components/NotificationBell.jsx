@@ -62,7 +62,13 @@ function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
+        <>
+          {/* Mobile overlay */}
+          <div 
+            className="fixed inset-0 bg-black/20 z-40 sm:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-sm bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
           <div className="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
             <span className="flex items-center gap-2 font-semibold text-slate-800">
               <Bell size={18} className="text-slate-600" />
@@ -129,6 +135,7 @@ function NotificationBell() {
             </div>
           )}
         </div>
+        </>
       )}
     </div>
   );

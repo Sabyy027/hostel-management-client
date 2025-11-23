@@ -16,7 +16,7 @@ import {
   User
 } from 'lucide-react';
 
-const AdminSidebar = () => {
+const AdminSidebar = ({ onClose }) => {
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const isWarden = user.role === 'warden' || user.role === 'rt';
@@ -160,6 +160,7 @@ const AdminSidebar = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => onClose && onClose()}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
                   active
                     ? `${isWarden ? 'bg-teal-600 shadow-lg shadow-teal-500/30' : 'bg-indigo-600 shadow-lg shadow-indigo-500/30'} text-white`

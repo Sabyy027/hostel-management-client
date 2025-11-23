@@ -123,18 +123,18 @@ function AIChatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-indigo-600 text-white p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-700 transition-all duration-300 hover:scale-105 group"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-indigo-600 text-white p-3 sm:p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-700 transition-all duration-300 hover:scale-105 group"
         >
           <div className="relative">
-            <MessageCircle size={28} />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse border-2 border-white"></span>
+            <MessageCircle size={24} className="sm:w-7 sm:h-7" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 rounded-full animate-pulse border-2 border-white"></span>
           </div>
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-slate-900 rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-700">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 h-[calc(100vh-8rem)] sm:h-[600px] max-h-[600px] bg-slate-900 rounded-xl shadow-2xl flex flex-col overflow-hidden border border-slate-700">
           {/* Header */}
           <div className="bg-slate-800 border-b border-slate-700 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">

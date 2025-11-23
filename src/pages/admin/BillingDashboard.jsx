@@ -131,8 +131,8 @@ function BillingDashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-500 font-medium">Active Services</p>
@@ -144,11 +144,11 @@ function BillingDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500 font-medium">Discount Rules</p>
-              <p className="text-3xl font-bold text-slate-800 mt-1">{totalDiscounts}</p>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium">Discount Rules</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">{totalDiscounts}</p>
             </div>
             <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
               <Tag className="w-6 h-6 text-emerald-600" />
@@ -156,11 +156,11 @@ function BillingDashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500 font-medium">Monthly Revenue</p>
-              <p className="text-3xl font-bold text-slate-800 mt-1">₹{monthlyRevenue.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium">Monthly Revenue</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-800 mt-1">₹{monthlyRevenue.toLocaleString()}</p>
             </div>
             <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
               <TrendingUp className="w-6 h-6 text-indigo-600" />
@@ -173,7 +173,7 @@ function BillingDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* LEFT: SERVICE LIBRARY */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -195,9 +195,9 @@ function BillingDashboard() {
           {/* Edit Modal */}
           {editingService && (
             <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-200">
-                <div className="flex items-center justify-between p-6 border-b border-slate-200">
-                  <h3 className="text-xl font-bold text-slate-800">Edit Service</h3>
+              <div className="bg-white rounded-xl max-w-lg w-full shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200">
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-800">Edit Service</h3>
                   <button 
                     onClick={() => setEditingService(null)}
                     className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -205,7 +205,7 @@ function BillingDashboard() {
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <form onSubmit={handleUpdateService} className="p-6 space-y-4">
+                <form onSubmit={handleUpdateService} className="p-4 sm:p-6 space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Service Name</label>
                     <input 

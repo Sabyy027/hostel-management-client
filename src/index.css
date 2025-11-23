@@ -86,3 +86,25 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  /* Ensure modals are full width on mobile */
+  .modal-container {
+    padding: 1rem;
+  }
+  
+  /* Better touch targets on mobile */
+  button, a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  /* Adjust spacing for tablets */
+  .tablet-padding {
+    padding: 1.5rem;
+  }
+}

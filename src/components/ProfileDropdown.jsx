@@ -45,10 +45,10 @@ const ProfileDropdown = ({ user, roleColor = 'indigo' }) => {
   return (
     <button
       onClick={handleProfileClick}
-      className="flex items-center gap-3 pl-4 border-l border-slate-200 hover:bg-slate-50 rounded-lg transition-colors p-2"
+      className="flex items-center gap-2 sm:gap-3 pl-2 sm:pl-4 border-l border-slate-200 hover:bg-slate-50 rounded-lg transition-colors p-2"
       title="View Profile"
     >
-      <div className="text-right">
+      <div className="text-right hidden md:block">
         <p className="text-sm font-semibold text-slate-800">{user.name || user.username}</p>
         <p className="text-xs text-slate-500 capitalize">{user.designation || user.role}</p>
       </div>

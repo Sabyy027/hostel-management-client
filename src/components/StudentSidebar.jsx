@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, BedDouble, AlertCircle, DollarSign, CreditCard, Settings, User, ShoppingBag, Building2, Lock } from 'lucide-react';
 import apiClient from '../api/axios';
 
-const StudentSidebar = () => {
+const StudentSidebar = ({ onClose }) => {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   const navigate = useNavigate();
   
@@ -134,6 +134,7 @@ const StudentSidebar = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
+                onClick={() => onClose && onClose()}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-lg transition-all group ${
                     isActive

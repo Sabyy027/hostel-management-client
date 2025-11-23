@@ -89,9 +89,9 @@ function Rooms() {
 
   // --- 3. The JSX (Return Statement) ---
   return (
-    <div className="container mx-auto max-w-6xl p-8 text-white">
-      <h1 className="mb-8 text-4xl font-bold">Hostel Rooms Management</h1>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+    <div className="container mx-auto max-w-6xl p-4 sm:p-6 lg:p-8 text-white">
+      <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold">Hostel Rooms Management</h1>
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
         
         {/* --- Section 1: Create Room Form (Refactored) --- */}
         <div className="md:col-span-1">

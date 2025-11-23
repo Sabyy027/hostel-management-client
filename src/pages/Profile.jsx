@@ -240,24 +240,24 @@ function Profile() {
           </div>
         </header>
 
-        <div className="p-6 max-w-4xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6 max-w-4xl mx-auto space-y-4 sm:space-y-6">
           {/* Profile Picture Card */}
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6">
             <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
               <Camera className="w-5 h-5 text-indigo-600" />
               Profile Picture
             </h2>
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
               {/* Profile Picture Display */}
-              <div className="relative">
+              <div className="relative flex-shrink-0">
                 {profilePicUrl ? (
                   <img
                     src={profilePicUrl}
                     alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 shadow-md"
+                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-slate-200 shadow-md"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-4xl font-bold border-4 border-slate-200 shadow-md">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-bold border-4 border-slate-200 shadow-md">
                     {userData?.username?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
@@ -308,7 +308,7 @@ function Profile() {
           </div>
 
           {/* User Info Card (Read-only) */}
-          <div className="bg-white rounded-lg border border-slate-200 p-6">
+          <div className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6">
             <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
               <User className="w-5 h-5 text-indigo-600" />
               Account Information
@@ -404,7 +404,7 @@ function Profile() {
           </div>
 
           {/* Editable Profile Form */}
-          <form onSubmit={formik.handleSubmit} className="bg-white rounded-lg border border-slate-200 p-6">
+          <form onSubmit={formik.handleSubmit} className="bg-white rounded-lg border border-slate-200 p-4 sm:p-6">
             {/* Contact Information */}
             <div className="mb-6">
               <h2 className="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">

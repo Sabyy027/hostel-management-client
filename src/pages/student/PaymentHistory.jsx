@@ -66,31 +66,33 @@ function PaymentHistory() {
       <div className="space-y-6">
         <div className="flex items-center gap-3">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">Transaction History</h2>
-            <p className="text-sm text-slate-500">View and download your invoices</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-800">Transaction History</h2>
+            <p className="text-xs sm:text-sm text-slate-500">View and download your invoices</p>
           </div>
         </div>
         
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <table className="w-full text-left">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Date</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Description</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Amount</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Status</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">Invoice</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Date</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Description</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Amount</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Status</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center whitespace-nowrap">Invoice</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {invoices.map(inv => (
                 <tr key={inv._id} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-4 text-sm text-slate-600">
+                  <td className="p-2 sm:p-4 text-sm text-slate-600 whitespace-nowrap">
                     {new Date(inv.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                       {inv.items.map((item, i) => (
-                          <div key={i} className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                          <div key={i} className="font-semibold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
                             {item.description.includes('Service') ? <Wrench size={14} className="text-orange-500" /> : 
                              item.description.includes('Fine') ? <AlertTriangle size={14} className="text-red-500" /> : 
                              item.description.includes('Hostel') ? <Home size={14} className="text-indigo-500" /> : <FileText size={14} className="text-slate-500" />}
@@ -99,8 +101,8 @@ function PaymentHistory() {
                       ))}
                       <div className="text-xs text-slate-400 mt-1 font-mono">{inv.invoiceId}</div>
                   </td>
-                  <td className="p-4 font-mono font-bold text-slate-800">₹{inv.totalAmount}</td>
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4 font-mono font-bold text-slate-800 whitespace-nowrap">₹{inv.totalAmount}</td>
+                  <td className="p-2 sm:p-4">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
                           inv.status === 'Paid' 
                             ? 'bg-emerald-100 text-emerald-700' 
@@ -109,7 +111,7 @@ function PaymentHistory() {
                           {inv.status}
                       </span>
                   </td>
-                  <td className="p-4 text-center">
+                  <td className="p-2 sm:p-4 text-center">
                      {inv.status === 'Paid' && (
                        <button 
                          onClick={() => handleDownload(inv._id)}
@@ -123,7 +125,9 @@ function PaymentHistory() {
                 </tr>
               ))}
             </tbody>
-          </table>
+              </table>
+            </div>
+          </div>
           {invoices.length === 0 && (
             <div className="p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">

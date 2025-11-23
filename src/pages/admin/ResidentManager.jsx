@@ -95,16 +95,16 @@ function ResidentManager() {
     <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Resident Overview</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Resident Overview</h1>
           <p className="text-sm text-slate-500">Comprehensive resident management dashboard</p>
         </div>
 
         {/* FILTERS */}
-        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-3 sm:p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Filter size={16} className="text-slate-600" />
-              <h3 className="text-sm font-semibold text-slate-700">Filters</h3>
+              <h3 className="text-xs sm:text-sm font-semibold text-slate-700">Filters</h3>
             </div>
             <button 
               onClick={clearFilters}
@@ -114,7 +114,7 @@ function ResidentManager() {
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
             {/* Block Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Block</label>
@@ -223,23 +223,25 @@ function ResidentManager() {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+            <div className="inline-block min-w-full align-middle">
+              <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Resident Type</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Room</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Tickets</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Dues / Action</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Assigned RT</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide">Check-In Date</th>
-                <th className="p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center">Status</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Resident Type</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Room</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Tickets</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Dues / Action</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Assigned RT</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide whitespace-nowrap">Check-In Date</th>
+                <th className="p-2 sm:p-4 text-xs font-semibold text-slate-600 uppercase tracking-wide text-center whitespace-nowrap">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredResidents.map(res => (
                 <tr key={res._id} className="hover:bg-slate-50 transition-colors">
                   {/* 1. RESIDENT TYPE + INFO ICON */}
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-slate-100 rounded-lg">{getResidentIcon(res.gender)}</div>
                       <div>
@@ -258,7 +260,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 2. ROOM NO WITH HOVER */}
-                  <td className="p-4 relative">
+                  <td className="p-2 sm:p-4 relative">
                     {res.room ? (
                       <div className="relative inline-block group">
                         <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 font-bold text-sm px-3 py-1.5 rounded-lg cursor-pointer">
@@ -291,7 +293,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 3. TICKETS */}
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     {res.activeTickets > 0 ? (
                       <span className="inline-flex items-center gap-1.5 text-red-700 bg-red-100 font-semibold text-xs px-2.5 py-1 rounded-full">
                         <AlertTriangle size={14} />
@@ -306,7 +308,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 4. DUES + ACTION COMBINED */}
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     {res.pendingDues > 0 ? (
                       <div className="flex items-center gap-2">
                         <div className="text-red-700 font-mono font-bold bg-red-50 px-3 py-1 rounded-lg text-sm">
@@ -329,7 +331,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 5. ASSIGNED RT */}
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     {res.assignedRT ? (
                       <div className="text-sm">
                         <div className="font-semibold text-slate-800">{res.assignedRT.name}</div>
@@ -341,7 +343,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 6. CHECK-IN DATE */}
-                  <td className="p-4">
+                  <td className="p-2 sm:p-4">
                     {res.checkInDate ? (
                       <div className="flex items-center gap-2 text-sm text-slate-700">
                         <Calendar size={14} className="text-slate-400" />
@@ -357,7 +359,7 @@ function ResidentManager() {
                   </td>
 
                   {/* 7. STATUS */}
-                  <td className="p-4 text-center">
+                  <td className="p-2 sm:p-4 text-center">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(res.status)}`}>
                       {res.status === 'Active' && <CheckCircle size={14} />}
                       {res.status === 'Vacated' && <XCircle size={14} />}
@@ -367,7 +369,9 @@ function ResidentManager() {
                 </tr>
               ))}
             </tbody>
-          </table>
+              </table>
+            </div>
+          </div>
 
           {filteredResidents.length === 0 && residents.length > 0 && (
             <div className="p-12 text-center">
@@ -404,12 +408,12 @@ function ResidentManager() {
           onClick={() => setSelectedResident(null)}
         >
           <div 
-            className="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl"
+            className="bg-white rounded-xl p-4 sm:p-6 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-start mb-6">
+            <div className="flex justify-between items-start mb-4 sm:mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <h2 className="text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
                   <div className="p-2 bg-slate-100 rounded-lg">{getResidentIcon(selectedResident.gender)}</div>
                   {selectedResident.name}
                 </h2>

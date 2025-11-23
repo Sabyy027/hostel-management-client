@@ -500,29 +500,30 @@ function HostelManager() {
       <div className="min-h-screen bg-slate-50">
         {/* Header Bar */}
         <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-          <div className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <Building2 className="text-indigo-600" size={24} />
+          <div className="flex items-center justify-between p-3 sm:p-4">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg flex-shrink-0">
+                <Building2 className="text-indigo-600 w-5 h-5 sm:w-6 sm:h-6" />
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-slate-900">Hostel Management</h1>
-                <p className="text-xs text-slate-500">Manage blocks, floors, and rooms</p>
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 truncate">Hostel Management</h1>
+                <p className="text-xs text-slate-500 hidden sm:block">Manage blocks, floors, and rooms</p>
               </div>
             </div>
             <button 
               onClick={() => setShowWizard(true)} 
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors"
+              className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors text-xs sm:text-sm flex-shrink-0 ml-2"
             >
-              <Plus size={18} />
-              New Property
+              <Plus className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+              <span className="hidden sm:inline">New Property</span>
+              <span className="sm:hidden">New</span>
             </button>
           </div>
         </header>
 
-        <div className="p-6 space-y-6">
+        <div className="p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-white p-4 rounded-lg border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>

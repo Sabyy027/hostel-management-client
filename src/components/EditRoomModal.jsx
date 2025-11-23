@@ -36,11 +36,11 @@ function EditRoomModal({ room, onClose, onUpdateSuccess }) {
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4"
       onClick={onClose}
     >
       <div 
-        className="w-full max-w-md rounded-lg bg-gray-800 p-6 shadow-lg"
+        className="w-full max-w-md rounded-lg bg-gray-800 p-4 sm:p-6 shadow-lg max-h-[90vh] overflow-y-auto"
         onClick={e => e.stopPropagation()} // Prevent closing on content click
       >
         <h2 className="mb-4 text-2xl font-semibold text-white">Edit Room {room.roomNumber}</h2>
