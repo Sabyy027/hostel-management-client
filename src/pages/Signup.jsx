@@ -60,7 +60,7 @@ function Signup() {
 
   return (
     <div className="flex min-h-screen bg-slate-50">
-      {/* Left Side - Branding Panel (Desktop) */}
+      {/* Left Side - Branding Panel */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
         {/* Branding Content */}
         <div className="relative z-10 flex flex-col justify-center items-center w-full p-16">
@@ -88,36 +88,15 @@ function Signup() {
       {/* Right Side - Signup Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          {/* Branding Panel for Mobile */}
-          <div className="lg:hidden mb-8">
-            <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 sm:p-8 text-center">
-              <div className="flex flex-col items-center">
-                {/* Rounded Square Icon with Building */}
-                <div className="mb-4 sm:mb-6">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-500/80 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl mx-auto">
-                    <Building2 className="text-white w-8 h-8 sm:w-10 sm:h-10" />
-                  </div>
-                </div>
-                
-                {/* HMS Text */}
-                <div>
-                  <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2 tracking-tight">
-                    HMS
-                  </h1>
-                  <p className="text-base sm:text-lg text-indigo-100 font-medium">
-                    Hostel Management System
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Signup Header */}
+          {/* Logo/Icon Section */}
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
+              <UserPlus className="w-8 h-8 text-emerald-600" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-800 mb-2">
               Create Your Account
             </h2>
-            <p className="text-sm sm:text-base text-slate-500">Join us to book your hostel room</p>
+            <p className="text-slate-500">Join us to book your hostel room</p>
           </div>
 
           {/* Main Card */}
