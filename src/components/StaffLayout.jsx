@@ -1,11 +1,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
+import ProfileDropdown from './ProfileDropdown';
+import AIChatbot from './AIChatbot';
 import { 
   LayoutDashboard, 
   Wrench,
   Building2,
   LogOut,
-  Bell
+  Bell,
+  User
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -27,29 +31,35 @@ const StaffLayout = ({ children }) => {
       icon: Wrench,
       color: 'amber'
     },
+    { 
+      label: 'My Profile', 
+      path: '/staff/profile', 
+      icon: User,
+      color: 'amber'
+    },
   ];
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 bg-slate-900 min-h-screen border-r border-slate-800 flex flex-col">
+      <div className="w-64 bg-slate-900 h-screen border-r border-slate-800 flex flex-col fixed left-0 top-0">
         {/* Header */}
-        <div className="p-6 border-b border-slate-800">
+        <div className="p-6 border-b border-slate-800 flex-shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-amber-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30">
               <Building2 className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-white">HostelFlow</h1>
+              <h1 className="text-lg font-bold text-white">HMS</h1>
               <p className="text-xs text-slate-400">Staff Portal</p>
             </div>
           </div>
         </div>
 
         {/* Main Menu */}
-        <div className="flex-1 py-6 px-4">
+        <div className="flex-1 py-6 px-4 overflow-y-auto">
           <div className="space-y-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
@@ -76,12 +86,35 @@ const StaffLayout = ({ children }) => {
           </div>
         </div>
 
+        {/* User Info Footer */}
+        <div className="p-4 border-t border-slate-800 flex-shrink-0">
+          <div className="flex items-center gap-3">
+            {user.photoUrl ? (
+              <img
+                src={user.photoUrl}
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover border-2 border-amber-500"
+              />
+            ) : (
+              <div className="w-10 h-10 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold">
+                {(user.username || 'S').charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-white truncate">
+                {user.username || 'Staff'}
+              </p>
+              <p className="text-xs text-slate-400">{user.designation || 'Staff Member'}</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-64 overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10 flex-shrink-0">
           <div>
             <h2 className="text-xl font-bold text-slate-800">
               Welcome back, {user.name || user.username || 'Staff'}
@@ -98,21 +131,10 @@ const StaffLayout = ({ children }) => {
 
           <div className="flex items-center gap-4">
             {/* Notifications */}
-            <button className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <NotificationBell />
 
-            {/* User Profile */}
-            <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
-              <div className="text-right">
-                <p className="text-sm font-semibold text-slate-800">{user.name || user.username}</p>
-                <p className="text-xs text-slate-500 capitalize">{user.role}</p>
-              </div>
-              <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center font-bold">
-                {(user.name || user.username || 'S').charAt(0).toUpperCase()}
-              </div>
-            </div>
+            {/* User Profile Dropdown */}
+            <ProfileDropdown user={user} roleColor="amber" />
 
             {/* Logout */}
             <button
@@ -126,10 +148,13 @@ const StaffLayout = ({ children }) => {
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 overflow-y-auto">
           {children}
         </div>
       </div>
+
+      {/* AI Chatbot - Available for staff */}
+      <AIChatbot />
     </div>
   );
 };

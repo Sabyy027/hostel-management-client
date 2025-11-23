@@ -3,7 +3,7 @@ import apiClient from '../../api/axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import AdminLayout from '../../components/AdminLayout';
-import { Building2, Layers, Plus, Trash2, Sparkles, Home, Snowflake, Tag, X, Users, BedDouble, Bath, Wifi, Search } from 'lucide-react';
+import { Building2, Layers, Plus, Trash2, Sparkles, Home, Snowflake, Tag, X, Users, BedDouble, Bath, Wifi, Search, ChevronDown } from 'lucide-react';
 
 // --- MODAL COMPONENT ---
 function Modal({ isOpen, onClose, title, children }) {
@@ -93,18 +93,23 @@ function CreateBlockWizard({ onClose, onCreated }) {
             </div>
             <div className="flex-1">
               <label className="text-xs text-slate-500 uppercase font-bold mb-1 block">Type</label>
-              <select 
-                className="w-full p-2 bg-white border border-slate-200 rounded-lg text-sm"
-                value={batch.type}
-                onChange={e => {
-                  const newBatches = [...batches];
-                  newBatches[idx].type = e.target.value;
-                  setBatches(newBatches);
-                }}
-              >
-                <option value="AC">Premium AC</option>
-                <option value="Non-AC">Standard Non-AC</option>
-              </select>
+              <div className="relative">
+                <select 
+                  className="w-full p-2 pr-8 bg-white border border-slate-200 rounded-lg text-sm appearance-none"
+                  value={batch.type}
+                  onChange={e => {
+                    const newBatches = [...batches];
+                    newBatches[idx].type = e.target.value;
+                    setBatches(newBatches);
+                  }}
+                >
+                  <option value="AC">Premium AC</option>
+                  <option value="Non-AC">Standard Non-AC</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
             {batches.length > 1 && (
               <button 
@@ -229,12 +234,17 @@ function AddRoomModal({ floor, onClose, onSuccess }) {
 
       <div>
         <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Capacity</label>
-        <select className="w-full p-3 border rounded-lg bg-white" 
-          value={formData.capacity}
-          onChange={e => setFormData({...formData, capacity: Number(e.target.value)})}
-        >
-          {[1,2,3,4,6].map(n => <option key={n} value={n}>{n} Person</option>)}
-        </select>
+        <div className="relative">
+          <select className="w-full p-3 pr-10 border rounded-lg bg-white appearance-none" 
+            value={formData.capacity}
+            onChange={e => setFormData({...formData, capacity: Number(e.target.value)})}
+          >
+            {[1,2,3,4,6].map(n => <option key={n} value={n}>{n} Person</option>)}
+          </select>
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <ChevronDown className="h-5 w-5 text-slate-400" />
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -271,14 +281,19 @@ function AddRoomModal({ floor, onClose, onSuccess }) {
               </div>
               <div className="flex-1">
                 <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Unit</label>
-                <select 
-                  className="w-full p-2 bg-white border border-slate-200 rounded text-sm"
-                  value={plan.unit}
-                  onChange={e => updatePricingPlan(idx, 'unit', e.target.value)}
-                >
-                  <option value="months">Months</option>
-                  <option value="years">Years</option>
-                </select>
+                <div className="relative">
+                  <select 
+                    className="w-full p-2 pr-8 bg-white border border-slate-200 rounded text-sm appearance-none"
+                    value={plan.unit}
+                    onChange={e => updatePricingPlan(idx, 'unit', e.target.value)}
+                  >
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                    <ChevronDown className="h-4 w-4 text-slate-400" />
+                  </div>
+                </div>
               </div>
               <div className="flex-1">
                 <label className="text-[10px] text-slate-500 uppercase font-bold mb-1 block">Price (₹)</label>
@@ -560,11 +575,11 @@ function HostelManager() {
           {/* Property Selector Pills */}
           {structure.length > 0 && (
             <div className="bg-white p-4 rounded-lg border border-slate-200">
-              <div className="flex items-center gap-2 overflow-x-auto">
+              <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
                 {structure.map(block => (
                   <div
                     key={block._id}
-                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap ${
+                    className={`relative flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
                       activeBlockId === block._id
                         ? 'bg-indigo-600 text-white shadow-md'
                         : 'bg-slate-100 text-slate-700 hover:bg-slate-200'

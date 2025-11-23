@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import MyBooking from "./pages/MyBooking"; // <-- 1. Import
@@ -21,12 +23,15 @@ import PaymentHistory from "./pages/student/PaymentHistory";
 import MyDues from "./pages/student/MyDues";
 import StaffRoute from "./components/StaffRoute";
 import StaffDashboard from "./pages/staff/StaffDashboard";
+import StaffProfile from "./pages/staff/StaffProfile";
 import ReportsDashboard from "./pages/admin/ReportsDashboard";
 import StaffRegister from "./pages/StaffRegister";
 import ChangePassword from "./pages/ChangePassword";
 import ResidentManager from "./pages/admin/ResidentManager";
 import BillingDashboard from "./pages/admin/BillingDashboard";
 import ExpenseManager from "./pages/admin/ExpenseManager";
+import AnnouncementManager from "./pages/admin/AnnouncementManager";
+import WardenProfile from "./pages/admin/WardenProfile";
 
 function App() {
   return (
@@ -36,6 +41,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route
           path="/change-password"
           element={
@@ -100,6 +107,22 @@ function App() {
           element={
             <ManagerRoute>
               <MaintenanceAdmin />
+            </ManagerRoute>
+          }
+        />
+        <Route
+          path="/admin/announcements"
+          element={
+            <ManagerRoute>
+              <AnnouncementManager />
+            </ManagerRoute>
+          }
+        />
+        <Route
+          path="/admin/profile"
+          element={
+            <ManagerRoute>
+              <WardenProfile />
             </ManagerRoute>
           }
         />
@@ -192,6 +215,14 @@ function App() {
           element={
             <StaffRoute>
               <StaffDashboard />
+            </StaffRoute>
+          }
+        />
+        <Route
+          path="/staff/profile"
+          element={
+            <StaffRoute>
+              <StaffProfile />
             </StaffRoute>
           }
         />

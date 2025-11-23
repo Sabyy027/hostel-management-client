@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../api/axios';
-import { Users, BedDouble, AlertCircle, DollarSign, TrendingUp, Activity, LogOut, Bell, CreditCard, ShoppingBag } from 'lucide-react';
+import { Users, BedDouble, AlertCircle, DollarSign, TrendingUp, Activity, LogOut, Bell, CreditCard, ShoppingBag, Home, Lock } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import NotificationBell from '../components/NotificationBell';
 import AdminLayout from '../components/AdminLayout';
 import StudentLayout from '../components/StudentLayout';
+import NoticeBoard from '../components/NoticeBoard';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -20,8 +21,12 @@ function Dashboard() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 1. Fetch Global Stats (Admin View)
-        if (user.role === 'admin' || user.role === 'warden' || user.role === 'resident tutor') {
+        // 1. Fetch Global Stats (Admin/Warden/RT View)
+        const isAdmin = user.role === 'admin';
+        const isWarden = user.role === 'warden';
+        const isRT = user.role === 'rt';
+        
+        if (isAdmin || isWarden || isRT) {
           const res = await apiClient.get('/reports/dashboard-stats');
           setStats(res.data);
         }
@@ -46,7 +51,16 @@ function Dashboard() {
     navigate('/login');
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-500">Loading Dashboard...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-indigo-200 border-t-indigo-600 mb-4"></div>
+          <p className="text-slate-600 font-medium">Loading Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   // --- 1. STUDENT VIEW (With Sidebar Layout) ---
   if (user.role === 'student') {
@@ -59,66 +73,30 @@ function Dashboard() {
             <p className="text-slate-500">Your hostel overview and quick actions</p>
           </div>
 
-          {/* Booking Status Banner */}
-          {!hasBooking ? (
-            <div className="relative overflow-hidden">
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 rounded-xl shadow-lg">
-                <div className="flex items-start justify-between relative z-10">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full animate-pulse">
-                        ACTION REQUIRED
-                      </span>
-                    </div>
-                    <h3 className="text-3xl font-bold mb-2">🏠 Book Your Room First!</h3>
-                    <p className="text-indigo-100 mb-2 max-w-lg">
-                      Welcome to HostelHub! To unlock all features and services, you need to complete your room booking.
-                    </p>
-                    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 mb-4 max-w-lg">
-                      <p className="text-sm text-indigo-50 font-semibold mb-2">🔒 Locked Features:</p>
-                      <ul className="text-sm text-indigo-100 space-y-1">
-                        <li>• Maintenance & Complaints</li>
-                        <li>• Payment & Billing</li>
-                        <li>• Additional Services (WiFi, Mess, etc.)</li>
-                        <li>• Profile Management</li>
-                      </ul>
-                    </div>
-                    <Link 
-                      to="/my-booking" 
-                      className="inline-flex items-center gap-2 px-8 py-4 bg-white text-indigo-600 rounded-lg font-bold hover:bg-indigo-50 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                    >
-                      <BedDouble size={20} />
-                      Book Your Room Now
-                    </Link>
-                  </div>
-                  <div className="hidden lg:block">
-                    <BedDouble size={120} className="text-white opacity-10" />
-                  </div>
+          {/* Welcome Banner for Booked Students */}
+          <div className="relative overflow-hidden">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8 rounded-xl shadow-lg">
+              <div className="flex items-start justify-between relative z-10">
+                <div className="flex-1">
+                  <h3 className="text-3xl font-bold mb-2 flex items-center gap-2">
+                    <Home size={28} /> Welcome Home, {user.username}! 🎉
+                  </h3>
+                  <p className="text-emerald-100 mb-2 max-w-lg">
+                    Your booking is confirmed! Manage your hostel experience from here.
+                  </p>
                 </div>
-                {/* Decorative Elements */}
-                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-purple-500 rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute -left-10 -top-10 w-32 h-32 bg-indigo-400 rounded-full opacity-20 blur-2xl"></div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <BedDouble className="text-green-600" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-lg">Your Room</h3>
-                  <p className="text-sm text-slate-500">Active Booking</p>
+                <div className="hidden lg:block">
+                  <BedDouble size={120} className="text-white opacity-10" />
                 </div>
               </div>
-              <Link 
-                to="/my-booking" 
-                className="inline-flex items-center gap-2 text-indigo-600 font-medium hover:text-indigo-700 transition-colors"
-              >
-                View Details →
-              </Link>
+              {/* Decorative Elements */}
+              <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-teal-500 rounded-full opacity-20 blur-3xl"></div>
+              <div className="absolute -left-10 -top-10 w-32 h-32 bg-emerald-400 rounded-full opacity-20 blur-2xl"></div>
             </div>
-          )}
+          </div>
+
+          {/* Notice Board */}
+          <NoticeBoard />
 
           {/* Quick Actions Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -242,16 +220,11 @@ function Dashboard() {
           <h2 className="text-2xl font-bold text-slate-800">Dashboard Overview</h2>
           <p className="text-slate-500">Welcome back, here's what's happening today.</p>
         </div>
-        <div className="flex gap-2">
-           <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center gap-1">
-               <Activity size={14} /> System Operational
-           </span>
-        </div>
       </div>
 
       {/* Stats Grid */}
       {stats && (
-        <div className={`grid grid-cols-1 md:grid-cols-2 ${(user.role === 'warden' || user.role === 'resident tutor') ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6 mb-8`}>
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${(user.role === 'warden' || user.role === 'rt') ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} gap-6 mb-8`}>
             
             {/* Card 1: Occupancy */}
             <Link to="/admin/occupancy" className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-start justify-between hover:shadow-md transition-all hover:-translate-y-1">
@@ -297,6 +270,9 @@ function Dashboard() {
 
         </div>
       )}
+
+      {/* Notice Board */}
+      <NoticeBoard />
 
       {/* Detail Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

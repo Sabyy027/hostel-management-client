@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
 import StudentLayout from '../../components/StudentLayout';
+import { CheckCircle } from 'lucide-react';
+import { useUI } from '../../context/UIContext';
 
 function MyDues() {
+  const { showToast, showLoading, hideLoading } = useUI();
   const [dues, setDues] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,8 +33,12 @@ function MyDues() {
   };
 
   const handlePay = async (invoice) => {
+    showLoading('Initializing payment...');
     const res = await loadRazorpay();
-    if (!res) return alert('Razorpay failed');
+    if (!res) {
+      hideLoading();
+      return showToast('Razorpay failed', 'error');
+    }
     const user = JSON.parse(localStorage.getItem('user'));
 
     try {
@@ -40,7 +47,7 @@ function MyDues() {
 
       // 2. Open Razorpay
       const options = {
-        key: "rzp_test_RhFyEYnxY7waP0", // YOUR KEY
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
         currency: order.currency,
         name: "Hostel Payment",
@@ -56,9 +63,13 @@ function MyDues() {
               invoiceId: invoice._id,
               studentData: { username: user.username, email: user.email }
             });
-            alert("Paid Successfully!");
+            hideLoading();
+            showToast("Paid Successfully!", 'success', 4000);
             fetchDues(); // Refresh list
-          } catch (err) { alert("Verification failed"); }
+          } catch (err) { 
+            hideLoading();
+            showToast("Verification failed", 'error'); 
+          }
         },
         theme: { color: "#ef4444" }, // Red for Dues
       };
@@ -66,7 +77,10 @@ function MyDues() {
       const rzp = new window.Razorpay(options);
       rzp.open();
 
-    } catch (err) { alert("Error initiating payment"); }
+    } catch (err) { 
+      hideLoading();
+      showToast("Error initiating payment", 'error'); 
+    }
   };
 
   if (loading) return <StudentLayout><div className="p-10 text-center">Loading Dues...</div></StudentLayout>;
@@ -83,7 +97,7 @@ function MyDues() {
         {dues.length === 0 && (
           <div className="p-10 bg-white rounded-xl text-center border border-slate-200 shadow-sm">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <span className="text-3xl">✓</span>
+              <CheckCircle className="text-green-600" size={32} />
             </div>
             <h3 className="text-xl font-bold text-green-600 mb-2">All Clear!</h3>
             <p className="text-slate-600">You have no pending dues.</p>

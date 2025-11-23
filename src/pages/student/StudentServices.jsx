@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
 import StudentLayout from '../../components/StudentLayout';
+import { ShoppingCart, CheckCircle, Key, FileText, Package } from 'lucide-react';
+import { useUI } from '../../context/UIContext';
 
 function StudentServices() {
+  const { showToast, showLoading, hideLoading } = useUI();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,13 +51,17 @@ function StudentServices() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Download error:', error);
-      alert('Failed to download mess pass. Please try again.');
+      showToast('Failed to download mess pass. Please try again.', 'error');
     }
   };
 
   const handleBuy = async (service) => {
+    showLoading('Initializing payment...');
     const res = await loadRazorpay();
-    if (!res) return alert('Razorpay failed to load');
+    if (!res) {
+      hideLoading();
+      return showToast('Razorpay failed to load', 'error');
+    }
     const user = JSON.parse(localStorage.getItem('user'));
 
     try {
@@ -80,10 +87,14 @@ function StudentServices() {
               studentData: { username: user.username, email: user.email }
             });
             
-            alert("Payment Successful! Service Activated.");
+            hideLoading();
+            showToast("Payment Successful! Service Activated.", 'success', 4000);
             fetchData(); // <--- REFRESH LIST TO UPDATE STATUS
             
-          } catch (err) { alert("Verification failed"); }
+          } catch (err) { 
+            hideLoading();
+            showToast("Verification failed", 'error'); 
+          }
         },
         theme: { color: "#2563eb" },
       };
@@ -91,7 +102,10 @@ function StudentServices() {
       const rzp = new window.Razorpay(options);
       rzp.open();
 
-    } catch (err) { alert("Error initiating payment"); }
+    } catch (err) { 
+      hideLoading();
+      showToast("Error initiating payment", 'error'); 
+    }
   };
 
   if (loading) return (
@@ -116,7 +130,7 @@ function StudentServices() {
         <div>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-indigo-100 rounded-lg">
-              <span className="text-2xl">🛒</span>
+              <ShoppingCart className="text-indigo-600" size={24} />
             </div>
             <div>
               <h1 className="text-3xl font-bold text-slate-800">Available Services</h1>
@@ -152,7 +166,7 @@ function StudentServices() {
                  {svc.isBought ? (
                    <div>
                      <span className="text-emerald-600 font-bold text-lg flex items-center gap-2">
-                       <span className="text-xl">✓</span> ACTIVE
+                       <CheckCircle size={20} /> ACTIVE
                      </span>
                      <p className="text-xs text-slate-500 mt-1">{svc.validityText}</p>
                    </div>
@@ -164,7 +178,9 @@ function StudentServices() {
               {/* Credentials Display (for WiFi, etc.) */}
               {svc.isBought && svc.userCredentials && (
                 <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-xs font-semibold text-amber-900 mb-1">🔑 Your Credentials:</p>
+                  <p className="text-xs font-semibold text-amber-900 mb-1 flex items-center gap-1">
+                    <Key size={14} /> Your Credentials:
+                  </p>
                   <pre className="text-xs text-amber-800 font-mono whitespace-pre-wrap break-all">
                     {svc.userCredentials}
                   </pre>
@@ -174,7 +190,9 @@ function StudentServices() {
               {/* Mess Pass Number */}
               {svc.isBought && svc.serviceType === 'Mess' && svc.passNumber && (
                 <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-xs font-semibold text-blue-900 mb-1">📋 Pass Number:</p>
+                  <p className="text-xs font-semibold text-blue-900 mb-1 flex items-center gap-1">
+                    <FileText size={14} /> Pass Number:
+                  </p>
                   <p className="text-sm text-blue-800 font-mono">{svc.passNumber}</p>
                 </div>
               )}
@@ -221,7 +239,7 @@ function StudentServices() {
         {services.length === 0 && (
           <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-              <span className="text-3xl">📦</span>
+              <Package className="text-slate-400" size={32} />
             </div>
             <p className="text-slate-500 font-medium">No services available</p>
             <p className="text-sm text-slate-400 mt-1">Check back later for new offerings</p>

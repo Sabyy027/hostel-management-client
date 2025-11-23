@@ -1,6 +1,7 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { ChevronDown } from 'lucide-react';
 
 // We can reuse the same validation schema
 const roomValidationSchema = Yup.object({
@@ -64,17 +65,22 @@ function EditRoomModal({ room, onClose, onUpdateSuccess }) {
           {/* Room Type */}
           <div>
             <label htmlFor="roomType" className="mb-2 block text-sm font-medium text-gray-300">Room Type</label>
-            <select
-              id="roomType" name="roomType"
-              value={formik.values.roomType}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className="w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-white"
-            >
-              <option value="single">Single</option>
-              <option value="double">Double</option>
-              <option value="dormitory">Dormitory</option>
-            </select>
+            <div className="relative">
+              <select
+                id="roomType" name="roomType"
+                value={formik.values.roomType}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 pr-10 text-white appearance-none"
+              >
+                <option value="single">Single</option>
+                <option value="double">Double</option>
+                <option value="dormitory">Dormitory</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </div>
+            </div>
             {formik.touched.roomType && formik.errors.roomType ? (
               <div className="mt-1 text-sm text-red-400">{formik.errors.roomType}</div>
             ) : null}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../api/axios';
 import { useFormik } from 'formik'; // <-- Import Formik
 import * as Yup from 'yup'; // <-- Import Yup
+import { ChevronDown } from 'lucide-react';
 
 // --- 1. Define Validation Schema with Yup ---
 const roomValidationSchema = Yup.object({
@@ -121,18 +122,23 @@ function Rooms() {
               {/* Room Type Field */}
               <div>
                 <label htmlFor="roomType" className="mb-2 block text-sm font-medium text-gray-300">Room Type</label>
-                <select
-                  id="roomType"
-                  name="roomType" // <-- Must match
-                  value={formik.values.roomType}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className="w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 text-white"
-                >
-                  <option value="single">Single</option>
-                  <option value="double">Double</option>
-                  <option value="dormitory">Dormitory</option>
-                </select>
+                <div className="relative">
+                  <select
+                    id="roomType"
+                    name="roomType" // <-- Must match
+                    value={formik.values.roomType}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className="w-full rounded-lg border border-gray-600 bg-gray-700 p-2.5 pr-10 text-white appearance-none"
+                  >
+                    <option value="single">Single</option>
+                    <option value="double">Double</option>
+                    <option value="dormitory">Dormitory</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <ChevronDown className="h-4 w-4 text-gray-400" />
+                  </div>
+                </div>
                 {formik.touched.roomType && formik.errors.roomType ? (
                   <div className="mt-1 text-sm text-red-400">{formik.errors.roomType}</div>
                 ) : null}
@@ -212,7 +218,7 @@ function Rooms() {
                 </div>
                 <p className="mt-2 text-gray-300">Type: <span className="capitalize text-white">{room.roomType}</span></p>
                 <p className="text-gray-300">Capacity: <span className="text-white">{room.capacity}</span></p>
-                <p className="mt-2 text-xl font-semibold text-blue-400">${room.price} / night</p>
+                <p className="mt-2 text-xl font-semibold text-blue-400">₹{room.price} / night</p>
               </div>
             ))}
           </div>

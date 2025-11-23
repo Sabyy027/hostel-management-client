@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import apiClient from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { useUI } from '../context/UIContext';
 
 function ChangePassword() {
+  const { showToast, showLoading, hideLoading } = useUI();
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (password !== confirm) return alert("Passwords do not match");
+    if (password !== confirm) return showToast("Passwords do not match", 'warning');
     
     try {
+      showLoading('Updating password...');
       await apiClient.post('/auth/change-password', { newPassword: password });
       
       // Update the local user object so the app knows they are verified
@@ -21,13 +24,15 @@ function ChangePassword() {
         localStorage.setItem('user', JSON.stringify(user));
       }
 
-      alert("Password Updated! Welcome to the Dashboard.");
+      hideLoading();
+      showToast("Password Updated! Welcome to the Dashboard.", 'success', 3000);
       
       // Redirect to Staff Dashboard
-      navigate('/staff/dashboard');
+      setTimeout(() => navigate('/staff/dashboard'), 1000);
       
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to update password");
+      hideLoading();
+      showToast(err.response?.data?.message || "Failed to update password", 'error');
     }
   };
 

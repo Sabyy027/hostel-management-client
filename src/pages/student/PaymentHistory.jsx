@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
 import StudentLayout from '../../components/StudentLayout';
+import { Wrench, AlertTriangle, Home, FileText, Download, Inbox } from 'lucide-react';
+import { useUI } from '../../context/UIContext';
 
 function PaymentHistory() {
+  const { showToast } = useUI();
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +40,7 @@ function PaymentHistory() {
       window.URL.revokeObjectURL(url); // Free up memory
       
     } catch (err) {
-      alert("Failed to download invoice");
+      showToast("Failed to download invoice", 'error');
       console.error(err);
     }
   };
@@ -87,10 +90,10 @@ function PaymentHistory() {
                   </td>
                   <td className="p-4">
                       {inv.items.map((item, i) => (
-                          <div key={i} className="font-semibold text-slate-800 text-sm">
-                            {item.description.includes('Service') ? '🛠️ ' : 
-                             item.description.includes('Fine') ? '⚠️ ' : 
-                             item.description.includes('Hostel') ? '🏠 ' : '📄 '}
+                          <div key={i} className="font-semibold text-slate-800 text-sm flex items-center gap-1.5">
+                            {item.description.includes('Service') ? <Wrench size={14} className="text-orange-500" /> : 
+                             item.description.includes('Fine') ? <AlertTriangle size={14} className="text-red-500" /> : 
+                             item.description.includes('Hostel') ? <Home size={14} className="text-indigo-500" /> : <FileText size={14} className="text-slate-500" />}
                             {item.description}
                           </div>
                       ))}
@@ -113,7 +116,7 @@ function PaymentHistory() {
                          className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg transition-colors text-sm font-medium inline-flex items-center gap-1.5 shadow-sm"
                          title="Download Invoice"
                        >
-                         <span>📥</span> PDF
+                         <Download size={14} /> PDF
                        </button>
                      )}
                   </td>
@@ -124,7 +127,7 @@ function PaymentHistory() {
           {invoices.length === 0 && (
             <div className="p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-                <span className="text-3xl">📭</span>
+                <Inbox className="text-slate-400" size={32} />
               </div>
               <p className="text-slate-500 font-medium">No transaction history found</p>
               <p className="text-sm text-slate-400 mt-1">Your payment records will appear here</p>

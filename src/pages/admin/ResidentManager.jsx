@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import apiClient from '../../api/axios';
 import AdminLayout from '../../components/AdminLayout';
-import { User, MapPin, Phone, Mail, Calendar, CheckCircle, XCircle, Filter } from 'lucide-react';
+import { User, MapPin, Phone, Mail, Calendar, CheckCircle, XCircle, Filter, ChevronDown, UserCheck, Users, Search, Home, AlertTriangle, Send, Clock } from 'lucide-react';
 
 function ResidentManager() {
   const [residents, setResidents] = useState([]);
@@ -64,9 +64,9 @@ function ResidentManager() {
   };
 
   const getResidentIcon = (gender) => {
-    if (gender === 'Male') return '👨';
-    if (gender === 'Female') return '👩';
-    return '👤';
+    if (gender === 'Male') return <User className="w-6 h-6 text-blue-600" />;
+    if (gender === 'Female') return <User className="w-6 h-6 text-pink-600" />;
+    return <User className="w-6 h-6 text-slate-600" />;
   };
 
   const getStatusColor = (status) => {
@@ -118,76 +118,101 @@ function ResidentManager() {
             {/* Block Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Block</label>
-              <select 
-                value={filterBlock}
-                onChange={(e) => setFilterBlock(e.target.value)}
-                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">All Blocks</option>
-                {uniqueBlocks.map(block => (
-                  <option key={block} value={block}>{block}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select 
+                  value={filterBlock}
+                  onChange={(e) => setFilterBlock(e.target.value)}
+                  className="w-full p-2 pr-8 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none"
+                >
+                  <option value="">All Blocks</option>
+                  {uniqueBlocks.map(block => (
+                    <option key={block} value={block}>{block}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
 
             {/* Floor Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Floor</label>
-              <select 
-                value={filterFloor}
-                onChange={(e) => setFilterFloor(e.target.value)}
-                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">All Floors</option>
-                {uniqueFloors.map(floor => (
-                  <option key={floor} value={floor}>{floor}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select 
+                  value={filterFloor}
+                  onChange={(e) => setFilterFloor(e.target.value)}
+                  className="w-full p-2 pr-8 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none"
+                >
+                  <option value="">All Floors</option>
+                  {uniqueFloors.map(floor => (
+                    <option key={floor} value={floor}>{floor}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
 
             {/* Room Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Room</label>
-              <select 
-                value={filterRoom}
-                onChange={(e) => setFilterRoom(e.target.value)}
-                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">All Rooms</option>
-                {uniqueRooms.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(room => (
-                  <option key={room} value={room}>{room}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select 
+                  value={filterRoom}
+                  onChange={(e) => setFilterRoom(e.target.value)}
+                  className="w-full p-2 pr-8 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none"
+                >
+                  <option value="">All Rooms</option>
+                  {uniqueRooms.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(room => (
+                    <option key={room} value={room}>{room}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
 
             {/* RT Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Resident Tutor</label>
-              <select 
-                value={filterRT}
-                onChange={(e) => setFilterRT(e.target.value)}
-                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">All RTs</option>
-                {uniqueRTs.map(rt => (
-                  <option key={rt} value={rt}>{rt}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <select 
+                  value={filterRT}
+                  onChange={(e) => setFilterRT(e.target.value)}
+                  className="w-full p-2 pr-8 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none"
+                >
+                  <option value="">All RTs</option>
+                  {uniqueRTs.map(rt => (
+                    <option key={rt} value={rt}>{rt}</option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
 
             {/* Status Filter */}
             <div>
               <label className="block text-xs text-slate-600 mb-1.5">Status</label>
-              <select 
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="w-full p-2 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-              >
-                <option value="">All Statuses</option>
-                <option value="Active">Active</option>
-                <option value="Vacated">Vacated</option>
-                <option value="Pending">Pending</option>
-              </select>
+              <div className="relative">
+                <select 
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="w-full p-2 pr-8 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none appearance-none"
+                >
+                  <option value="">All Statuses</option>
+                  <option value="Active">Active</option>
+                  <option value="Vacated">Vacated</option>
+                  <option value="Pending">Pending</option>
+                </select>
+                <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                  <ChevronDown className="h-4 w-4 text-slate-400" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -216,7 +241,7 @@ function ResidentManager() {
                   {/* 1. RESIDENT TYPE + INFO ICON */}
                   <td className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl">{getResidentIcon(res.gender)}</div>
+                      <div className="p-2 bg-slate-100 rounded-lg">{getResidentIcon(res.gender)}</div>
                       <div>
                         <div className="font-semibold text-slate-800">{res.name}</div>
                         <div className="text-xs text-slate-500">{res.gender || 'N/A'}</div>
@@ -227,7 +252,7 @@ function ResidentManager() {
                         className="ml-2 text-indigo-600 hover:text-indigo-700 transition-colors"
                         title="View full details"
                       >
-                        <User size={18} />
+                        <UserCheck size={18} />
                       </button>
                     </div>
                   </td>
@@ -237,7 +262,7 @@ function ResidentManager() {
                     {res.room ? (
                       <div className="relative inline-block group">
                         <div className="inline-flex items-center gap-1.5 bg-blue-100 text-blue-700 font-bold text-sm px-3 py-1.5 rounded-lg cursor-pointer">
-                          <span>🚪</span>
+                          <Home size={14} />
                           {res.room.roomNumber}
                         </div>
                         {/* HOVER TOOLTIP */}
@@ -269,12 +294,12 @@ function ResidentManager() {
                   <td className="p-4">
                     {res.activeTickets > 0 ? (
                       <span className="inline-flex items-center gap-1.5 text-red-700 bg-red-100 font-semibold text-xs px-2.5 py-1 rounded-full">
-                        <span>⚠️</span>
+                        <AlertTriangle size={14} />
                         {res.activeTickets} Open
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-100 text-xs px-2.5 py-1 rounded-full font-medium">
-                        <span>✓</span>
+                        <CheckCircle size={14} />
                         No Issues
                       </span>
                     )}
@@ -289,15 +314,16 @@ function ResidentManager() {
                         </div>
                         <button 
                           onClick={() => handleSendReminder(res)}
-                          className="bg-amber-500 hover:bg-amber-600 text-white px-2 py-1 rounded text-xs font-semibold transition-colors"
+                          className="bg-amber-500 hover:bg-amber-600 text-white p-2 rounded-lg text-xs font-semibold transition-colors"
                           title="Send Reminder"
                         >
-                          📧
+                          <Send size={14} />
                         </button>
                       </div>
                     ) : (
-                      <div className="text-emerald-700 text-xs bg-emerald-50 inline-block px-3 py-1 rounded-lg font-medium">
-                        ✓ Settled
+                      <div className="inline-flex items-center gap-1.5 text-emerald-700 text-xs bg-emerald-50 px-3 py-1 rounded-lg font-medium">
+                        <CheckCircle size={14} />
+                        Settled
                       </div>
                     )}
                   </td>
@@ -346,7 +372,7 @@ function ResidentManager() {
           {filteredResidents.length === 0 && residents.length > 0 && (
             <div className="p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-                <span className="text-3xl">🔍</span>
+                <Search className="w-8 h-8 text-slate-400" />
               </div>
               <p className="text-slate-500 font-medium">No residents match your filters</p>
               <p className="text-sm text-slate-400 mt-1">Try adjusting or clearing your filters</p>
@@ -362,7 +388,7 @@ function ResidentManager() {
           {residents.length === 0 && (
             <div className="p-12 text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-                <span className="text-3xl">👤</span>
+                <Users className="w-8 h-8 text-slate-400" />
               </div>
               <p className="text-slate-500 font-medium">No residents found</p>
               <p className="text-sm text-slate-400 mt-1">Resident data will appear here once bookings are made</p>
@@ -384,7 +410,7 @@ function ResidentManager() {
             <div className="flex justify-between items-start mb-6">
               <div>
                 <h2 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                  <span className="text-3xl">{getResidentIcon(selectedResident.gender)}</span>
+                  <div className="p-2 bg-slate-100 rounded-lg">{getResidentIcon(selectedResident.gender)}</div>
                   {selectedResident.name}
                 </h2>
                 <p className="text-slate-500 text-sm mt-1">Complete Resident Profile</p>

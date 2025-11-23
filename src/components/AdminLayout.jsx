@@ -1,5 +1,7 @@
 import React from 'react';
 import AdminSidebar from './AdminSidebar';
+import NotificationBell from './NotificationBell';
+import AIChatbot from './AIChatbot';
 import { Bell, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,12 +37,12 @@ const AdminLayout = ({ children }) => {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex h-screen bg-slate-50 overflow-hidden">
       {/* Sidebar */}
       <AdminSidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-64 overflow-hidden">
         {/* Top Bar */}
         <div className="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
           <div>
@@ -59,10 +61,7 @@ const AdminLayout = ({ children }) => {
 
           <div className="flex items-center gap-4">
             {/* Notifications */}
-            <button className="relative p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
+            <NotificationBell />
 
             {/* User Profile */}
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200">
@@ -87,10 +86,13 @@ const AdminLayout = ({ children }) => {
         </div>
 
         {/* Page Content */}
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-8 overflow-y-auto">
           {children}
         </div>
       </div>
+
+      {/* AI Chatbot - Available for admins */}
+      <AIChatbot />
     </div>
   );
 };

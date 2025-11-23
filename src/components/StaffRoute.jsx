@@ -10,8 +10,8 @@ function StaffRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
-  // Allow 'staff' AND 'admin' (Admins might want to view it for testing)
-  if (user.role !== 'staff' && user.role !== 'admin') {
+  // Allow only 'staff' role (Electrician, Plumber, etc.)
+  if (user.role !== 'staff') {
     return <Navigate to="/dashboard" replace />;
   }
 
