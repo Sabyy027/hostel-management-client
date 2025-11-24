@@ -233,7 +233,7 @@ function AddRoomModal({ floor, onClose, onSuccess }) {
             value={formData.capacity}
             onChange={e => setFormData({...formData, capacity: Number(e.target.value)})}
           >
-            {[1,2,3,4,6].map(n => <option key={n} value={n}>{n} Person</option>)}
+            {[1,2,3,4].map(n => <option key={n} value={n}>{n} Person</option>)}
           </select>
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
             <ChevronDown className="h-5 w-5 text-slate-400" />
