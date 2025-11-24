@@ -104,6 +104,7 @@ const StaffProfile = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       user.photoUrl = data.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('userUpdated'));
       
       alert('Profile picture updated successfully!');
     } catch (error) {
@@ -128,6 +129,7 @@ const StaffProfile = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       user.photoUrl = null;
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('userUpdated'));
       
       alert('Profile picture removed successfully!');
     } catch (error) {

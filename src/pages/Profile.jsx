@@ -153,6 +153,7 @@ function Profile() {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       user.photoUrl = response.data.photoUrl;
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('userUpdated'));
     } catch (error) {
       setApiError(error.response?.data?.message || 'Error uploading profile picture');
     } finally {
@@ -183,6 +184,7 @@ function Profile() {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       user.photoUrl = null;
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event('userUpdated'));
     } catch (error) {
       setApiError(error.response?.data?.message || 'Error deleting profile picture');
     } finally {
