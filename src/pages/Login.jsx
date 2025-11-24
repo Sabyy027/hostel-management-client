@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import { Home, Building2, Users, ShieldCheck, Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react'; 
+import { Home, Building2, Users, ShieldCheck, Eye, EyeOff, Mail, Lock, LogIn, Download } from 'lucide-react'; 
 import apiClient from '../api/axios';
 
 function Login() {
@@ -9,6 +9,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showDocTooltip, setShowDocTooltip] = useState(false);
 
   // 3. Add loading and error states
   const [loading, setLoading] = useState(false);
@@ -96,6 +97,33 @@ function Login() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 overflow-hidden">
+      {/* Documentation Download Button - Top Left */}
+      <div className="fixed top-4 left-4 z-50">
+        <div className="relative">
+          <button
+            onClick={() => window.open(`${apiClient.defaults.baseURL}/api/documentation/download`, '_blank')}
+            onMouseEnter={() => setShowDocTooltip(true)}
+            onMouseLeave={() => setShowDocTooltip(false)}
+            className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+            aria-label="Download Documentation"
+          >
+            <Download size={20} className="group-hover:animate-bounce" />
+          </button>
+          
+          {/* Tooltip */}
+          {showDocTooltip && (
+            <div className="absolute top-0 left-16 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-2xl whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-200 border border-emerald-400/30">
+              <div className="text-sm font-semibold mb-1">📄 Test Documentation</div>
+              <p className="text-xs text-slate-300">
+                To test this application,<br />kindly download this documentation
+              </p>
+              {/* Arrow */}
+              <div className="absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2 w-3 h-3 bg-slate-900 border-l border-b border-emerald-400/30 rotate-45"></div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Left Side - Image Carousel */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
         {/* Animated Background Pattern */}

@@ -7,6 +7,7 @@ function AIChatbot() {
   const userRole = user.role || 'student';
   
   const [isOpen, setIsOpen] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(false);
   const [messages, setMessages] = useState([
     {
       role: 'bot',
@@ -18,6 +19,26 @@ function AIChatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Show greeting popup after component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGreeting(true);
+    }, 2000); // Show after 2 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Auto-hide greeting after 10 seconds
+  useEffect(() => {
+    if (showGreeting) {
+      const timer = setTimeout(() => {
+        setShowGreeting(false);
+      }, 10000); // Hide after 10 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [showGreeting]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -119,10 +140,44 @@ function AIChatbot() {
 
   return (
     <>
+      {/* Animated Greeting Popup */}
+      {!isOpen && showGreeting && (
+        <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="relative bg-gradient-to-br from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-2xl max-w-xs animate-bounce-gentle border border-indigo-400">
+            {/* Close button */}
+            <button
+              onClick={() => setShowGreeting(false)}
+              className="absolute -top-2 -right-2 bg-white text-indigo-600 rounded-full p-1 hover:bg-indigo-50 transition-colors shadow-lg"
+            >
+              <X size={16} />
+            </button>
+            
+            {/* Content */}
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center animate-wave">
+                <Hand size={20} className="text-yellow-300" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm mb-1">Hey! I'm HostelBot AI 👋</h4>
+                <p className="text-xs text-indigo-100 leading-relaxed">
+                  Got questions? Ask me anything about hostel services, dues, mess menu, or rules!
+                </p>
+              </div>
+            </div>
+            
+            {/* Arrow pointing to chat button */}
+            <div className="absolute -bottom-2 right-8 w-4 h-4 bg-gradient-to-br from-indigo-600 to-purple-600 rotate-45 border-r border-b border-indigo-400"></div>
+          </div>
+        </div>
+      )}
+
       {/* Chat Button - Bottom Right */}
       {!isOpen && (
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            setIsOpen(true);
+            setShowGreeting(false);
+          }}
           className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-indigo-600 text-white p-3 sm:p-4 rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-700 transition-all duration-300 hover:scale-105 group"
         >
           <div className="relative">
