@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
+import StaffMobileMenu from './StaffMobileMenu';
 import ProfileDropdown from './ProfileDropdown';
 import AIChatbot from './AIChatbot';
 import { 
