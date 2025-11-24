@@ -1,17 +1,26 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 viewBox="0 0 209.646 209.646" xml:space="preserve">
-<path d="M193.008,105.651c0.364-1.059,0.571-2.191,0.571-3.372V84.179c0-5.07-3.644-9.3-8.45-10.222
-	c-0.616-14.357-12.506-25.439-27.581-25.439h-12.532c-6.14-11.045-19.958-16.861-40.193-16.861S70.77,37.473,64.63,48.518H52.098
-	c-15.017,0-26.877,10.997-27.576,25.275c-4.708,0.285-8.454,4.194-8.454,8.972v19.513c0,1.181,0.207,2.313,0.571,3.372
-	C7.031,108.499,0,117.403,0,127.922v24.359c0,6.683,5.438,12.12,12.12,12.12h3.947v13.588h177.512v-13.588h3.947
-	c6.683,0,12.12-5.437,12.12-12.12v-24.359C209.646,117.403,202.615,108.499,193.008,105.651z M185.579,102.279
-	c0,1.331-1.083,2.414-2.414,2.414h-53.6c-1.331,0-2.414-1.083-2.414-2.414V82.765c0-0.551,0.448-1,1-1h55.014
-	c1.331,0,2.414,1.083,2.414,2.414V102.279z M104.823,95.184c1.162,0,2.354-0.041,3.64-0.125h10.688v7.219
-	c0,0.832,0.109,1.638,0.294,2.414H90.201c0.185-0.776,0.294-1.582,0.294-2.414V95.06h10.688
-	C102.469,95.143,103.661,95.184,104.823,95.184z M24.067,82.765c0-0.551,0.448-1,1-1h55.014c1.331,0,2.414,1.083,2.414,2.414v18.099
-	c0,1.331-1.083,2.414-2.414,2.414h-53.6c-1.331,0-2.414-1.083-2.414-2.414V82.765z M185.579,169.99H24.067v-5.588h161.512V169.99z"
-	/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background Shape -->
+  <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#grad1)" filter="url(#shadow)" />
+  
+  <!-- Building/House Icon -->
+  <path d="M50 25L25 45V75H40V60H60V75H75V45L50 25Z" fill="white" stroke="white" stroke-width="4" stroke-linejoin="round" />
+  
+  <!-- Roof Detail -->
+  <path d="M20 45L50 20L80 45" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Door/Entrance -->
+  <path d="M45 75V65H55V75" fill="#4F46E5" />
+  
+  <!-- HMS Text -->
+  <text x="50" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#4F46E5" text-anchor="middle" letter-spacing="2">HMS</text>
 </svg>
