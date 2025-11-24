@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// 1. Check if we are in production (deployed) or development (local)
+// Check if we are in production (deployed) or development (local)
 // VITE uses import.meta.env.VITE_API_URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
 

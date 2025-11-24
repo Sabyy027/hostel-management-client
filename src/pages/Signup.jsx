@@ -9,13 +9,13 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // 3. Add loading and error states
+  // Add loading and error states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const navigate = useNavigate(); // 4. Get the navigate function
 
-  // 5. Make the submit handler async
+  // Make the submit handler async
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     setError(null); // Clear previous errors
@@ -32,7 +32,7 @@ function Signup() {
     const signupData = { username, email, password };
 
     try {
-      // 6. Send the POST request to your backend
+      // Send the POST request to your backend
       const response = await axios.post(
         apiClient.defaults.baseURL + '/auth/signup', // Uses axios.js base URL
         signupData,
@@ -43,7 +43,7 @@ function Signup() {
         }
       );
 
-      // 7. Handle success
+      // Handle success
       console.log('Signup successful:', response.data);
       setLoading(false);
       
@@ -51,7 +51,7 @@ function Signup() {
       navigate('/login');
 
     } catch (err) {
-      // 8. Handle errors
+      // Handle errors
       console.error('Signup error:', err);
       setLoading(false);
       

@@ -65,10 +65,10 @@ function StudentServices() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     try {
-      // 1. Create Order
+      // Create Order
       const { data: order } = await apiClient.post('/payment/service/checkout', { serviceId: service._id });
 
-      // 2. Razorpay
+      // Razorpay
       const options = {
         key: "rzp_test_RhFyEYnxY7waP0", // YOUR KEY
         amount: order.amount,
@@ -78,7 +78,7 @@ function StudentServices() {
         order_id: order.orderId,
         handler: async function (response) {
           try {
-            // 3. Verify & Invoice
+            // Verify & Invoice
             await apiClient.post('/payment/service/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,

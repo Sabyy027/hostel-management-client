@@ -11,17 +11,13 @@ import NoticeBoard from '../components/NoticeBoard';
 function Dashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user'));
-  
-  // --- STATE ---
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [hasBooking, setHasBooking] = useState(false);
-
-  // --- FETCH DATA ---
   useEffect(() => {
     const loadData = async () => {
       try {
-        // 1. Fetch Global Stats (Admin/Warden/RT View)
+        // Fetch Global Stats (Admin/Warden/RT View)
         const isAdmin = user.role === 'admin';
         const isWarden = user.role === 'warden';
         const isRT = user.role === 'rt';
@@ -31,7 +27,7 @@ function Dashboard() {
           setStats(res.data);
         }
         
-        // 2. Check Booking (Student View)
+        // Check Booking (Student View)
         if (user.role === 'student') {
           const bookingRes = await apiClient.get('/bookings/my');
           if (bookingRes.data && bookingRes.data._id) setHasBooking(true);
@@ -61,8 +57,6 @@ function Dashboard() {
       </div>
     );
   }
-
-  // --- 1. STUDENT VIEW (With Sidebar Layout) ---
   if (user.role === 'student') {
     return (
       <StudentLayout>
@@ -202,8 +196,6 @@ function Dashboard() {
       </StudentLayout>
     );
   }
-
-  // --- 2. ADMIN / WARDEN VIEW (The Beautiful Dashboard) ---
   // Data Preparation
   const occupancyData = stats ? [
     { name: 'Occupied', value: stats.occupancy.occupied },

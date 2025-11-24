@@ -42,10 +42,10 @@ function MyDues() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     try {
-      // 1. Create Order
+      // Create Order
       const { data: order } = await apiClient.post('/payment/invoice/checkout', { invoiceId: invoice._id });
 
-      // 2. Open Razorpay
+      // Open Razorpay
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
@@ -55,7 +55,7 @@ function MyDues() {
         order_id: order.orderId,
         handler: async function (response) {
           try {
-            // 3. Verify
+            // Verify
             await apiClient.post('/payment/invoice/verify', {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,

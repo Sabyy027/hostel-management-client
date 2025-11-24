@@ -86,8 +86,6 @@ function OccupancyDashboard() {
   };
 
   const getActiveBlockData = () => structure.find(b => b._id === activeBlockId);
-
-  // --- HELPER: Status Color ---
   const getRoomColor = (room) => {
     if (room.isStaffRoom) return 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100';
     if (room.isOccupied) return 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100';

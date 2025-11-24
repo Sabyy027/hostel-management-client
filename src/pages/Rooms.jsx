@@ -3,8 +3,6 @@ import apiClient from '../api/axios';
 import { useFormik } from 'formik'; // <-- Import Formik
 import * as Yup from 'yup'; // <-- Import Yup
 import { ChevronDown } from 'lucide-react';
-
-// --- 1. Define Validation Schema with Yup ---
 const roomValidationSchema = Yup.object({
   roomNumber: Yup.string()
     .required('Room number is required')
@@ -22,12 +20,9 @@ const roomValidationSchema = Yup.object({
 
 
 function Rooms() {
-  // --- State for the list of rooms (this stays the same) ---
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  // --- This logic stays the same ---
   const fetchRooms = async () => {
     setLoading(true);
     setError(null);
@@ -45,8 +40,6 @@ function Rooms() {
   useEffect(() => {
     fetchRooms();
   }, []);
-
-  // --- 2. Setup Formik ---
   // We replace all the `useState` hooks for the form!
   const formik = useFormik({
     // Set initial values
@@ -86,8 +79,6 @@ function Rooms() {
       
     },
   });
-
-  // --- 3. The JSX (Return Statement) ---
   return (
     <div className="container mx-auto max-w-6xl p-4 sm:p-6 lg:p-8 text-white">
       <h1 className="mb-6 sm:mb-8 text-2xl sm:text-3xl lg:text-4xl font-bold">Hostel Rooms Management</h1>

@@ -26,8 +26,6 @@ function StaffManager() {
   };
 
   useEffect(() => { fetchStaff(); }, []);
-
-  // --- METHOD 1 HANDLER ---
   const handleDirectCreate = async (e) => {
     e.preventDefault();
     
@@ -41,8 +39,6 @@ function StaffManager() {
       showToast(err.response?.data?.message || 'Failed to create staff member', 'error'); 
     }
   };
-
-  // --- METHOD 2 HANDLER ---
   const generateLink = async () => {
     try {
       const res = await apiClient.post('/users/generate-invite');

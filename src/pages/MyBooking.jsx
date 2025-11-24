@@ -34,8 +34,6 @@ import {
   Dumbbell,
   Package
 } from 'lucide-react';
-
-// --- STEP 2 FORM COMPONENT ---
 function RegistrationForm({ initialData, onSubmit, onBack }) {
   const { showToast } = useUI();
   const [profileImage, setProfileImage] = useState(null);
@@ -384,9 +382,6 @@ function RegistrationForm({ initialData, onSubmit, onBack }) {
     </div>
   );
 }
-
-
-// --- MAIN PAGE ---
 function MyBooking() {
   const { showToast, showLoading, hideLoading } = useUI();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -463,8 +458,6 @@ function MyBooking() {
       document.body.appendChild(script);
     });
   };
-
-  // --- HANDLERS ---
   const handleRoomSelect = (room) => {
     const planId = selectedPlansMap[room._id];
     if (!planId) return showToast("Please select a price plan.", 'warning');
@@ -563,8 +556,6 @@ function MyBooking() {
   };
 
   const getActiveBlockData = () => structure.find(b => b._id === activeBlockId);
-
-  // --- RENDER LOGIC ---
   if (loading) return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <div className="text-center">

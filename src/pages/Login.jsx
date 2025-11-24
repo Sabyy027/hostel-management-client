@@ -11,7 +11,7 @@ function Login() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showDocTooltip, setShowDocTooltip] = useState(false);
 
-  // 3. Add loading and error states
+  // Add loading and error states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -41,7 +41,7 @@ function Login() {
     return () => clearInterval(interval);
   }, []);
 
-  // 5. Make the submit handler async
+  // Make the submit handler async
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -50,13 +50,13 @@ function Login() {
     const loginData = { email, password };
 
     try {
-      // 6. Send the POST request to your login endpoint
+      // Send the POST request to your login endpoint
       const response = await axios.post(
         apiClient.defaults.baseURL + '/auth/login',
         loginData
       );
 
-      // 7. Handle success & Store Data
+      // Handle success & Store Data
       console.log('Login successful:', response.data);
       setLoading(false);
 
@@ -68,8 +68,6 @@ function Login() {
       localStorage.setItem('hasBooking', hasBooking.toString());
       
       const user = response.data.user;
-
-      // --- NEW LOGIC: CHECK FIRST LOGIN ---
       if (user.isFirstLogin) {
         navigate('/change-password');
         return; // Stop here, don't redirect to dashboard yet

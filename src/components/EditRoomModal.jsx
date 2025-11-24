@@ -16,7 +16,7 @@ function EditRoomModal({ room, onClose, onUpdateSuccess }) {
   if (!room) return null; // Don't render if no room is selected
 
   const formik = useFormik({
-    // 1. Set initial values from the 'room' prop
+    // Set initial values from the 'room' prop
     initialValues: {
       roomNumber: room.roomNumber,
       roomType: room.roomType,
@@ -25,11 +25,11 @@ function EditRoomModal({ room, onClose, onUpdateSuccess }) {
       isOccupied: room.isOccupied,
     },
     validationSchema: roomValidationSchema,
-    // 2. This is key: it re-initializes the form when the 'room' prop changes
+    // This is key: it re-initializes the form when the 'room' prop changes
     enableReinitialize: true, 
     
     onSubmit: (values, { setSubmitting, setErrors }) => {
-      // 3. Call the onUpdateSuccess function passed from the parent
+      // Call the onUpdateSuccess function passed from the parent
       onUpdateSuccess(room._id, values, setSubmitting, setErrors);
     },
   });

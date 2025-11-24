@@ -20,8 +20,6 @@ function PaymentHistory() {
     };
     fetchHistory();
   }, []);
-
-  // --- DOWNLOAD HANDLER ---
   const handleDownload = async (invoiceId) => {
     try {
       // Request the file as a 'blob' (binary large object)

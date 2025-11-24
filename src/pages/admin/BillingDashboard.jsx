@@ -4,13 +4,10 @@ import { Trash2, PlusCircle, Tag, Wifi, AlertCircle, DollarSign, TrendingUp, Edi
 import AdminLayout from '../../components/AdminLayout';
 
 function BillingDashboard() {
-  // --- DATA STATE ---
   const [services, setServices] = useState([]);
   const [discounts, setDiscounts] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // --- CONFIG FORMS STATE ---
   const [newService, setNewService] = useState({ 
     name: '', 
     description: '', 
@@ -21,13 +18,9 @@ function BillingDashboard() {
   });
   const [newDiscount, setNewDiscount] = useState({ name: '', type: 'Fixed', value: '', targetCategory: 'Room' });
   const [editingService, setEditingService] = useState(null);
-
-  // --- FINE TERMINAL STATE ---
   const [selectedStudent, setSelectedStudent] = useState('');
   const [fineAmount, setFineAmount] = useState('');
   const [fineReason, setFineReason] = useState('');
-
-  // --- FETCH ALL DATA ---
   const fetchData = async () => {
     try {
       const [svcRes, discRes, stuRes] = await Promise.all([
@@ -43,8 +36,6 @@ function BillingDashboard() {
   };
 
   useEffect(() => { fetchData(); }, []);
-
-  // --- HANDLERS: CONFIGURATION ---
   const handleCreateService = async (e) => {
     e.preventDefault();
     try { 
@@ -88,8 +79,6 @@ function BillingDashboard() {
     try { await apiClient.post('/discounts', newDiscount); fetchData(); setNewDiscount({ name: '', type: 'Fixed', value: '', targetCategory: 'Room' }); } catch (err) { alert("Error"); }
   };
   const handleDeleteDiscount = async (id) => { if(window.confirm("Delete?")) { await apiClient.delete(`/discounts/${id}`); fetchData(); }};
-
-  // --- HANDLER: APPLY FINE ---
   const handleApplyFine = async (e) => {
     e.preventDefault();
     if (!selectedStudent) return alert("Please select a student");

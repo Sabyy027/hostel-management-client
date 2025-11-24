@@ -4,8 +4,6 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import AdminLayout from '../../components/AdminLayout';
 import { Building2, Layers, Plus, Trash2, Sparkles, Home, Snowflake, Tag, X, Users, BedDouble, Bath, Wifi, Search, ChevronDown } from 'lucide-react';
-
-// --- MODAL COMPONENT ---
 function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
   
@@ -25,8 +23,6 @@ function Modal({ isOpen, onClose, title, children }) {
     </div>
   );
 }
-
-// --- ( 1 ) CREATE BLOCK WIZARD ---
 function CreateBlockWizard({ onClose, onCreated }) {
   const [blockName, setBlockName] = useState('');
   const [batches, setBatches] = useState([{ count: 1, type: 'AC' }]);
@@ -138,8 +134,6 @@ function CreateBlockWizard({ onClose, onCreated }) {
     </Modal>
   );
 }
-
-// --- ( 2 ) ADD ROOM MODAL ---
 function AddRoomModal({ floor, onClose, onSuccess }) {
   const [isBulk, setIsBulk] = useState(false);
   const [formData, setFormData] = useState({
@@ -412,8 +406,6 @@ function RoomCard({ room, onDelete, onDiscount }) {
     </div>
   );
 }
-
-// --- ( 3 ) MAIN COMPONENT ---
 function HostelManager() {
   const [structure, setStructure] = useState([]);
   const [discounts, setDiscounts] = useState([]);
