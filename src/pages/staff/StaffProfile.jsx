@@ -93,16 +93,16 @@ const StaffProfile = () => {
     try {
       setUploading(true);
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('profilePicture', file);
 
       const { data } = await axios.post('/users/upload-profile-picture', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setProfilePicUrl(data.imageUrl);
+      setProfilePicUrl(data.photoUrl);
       
       const user = JSON.parse(localStorage.getItem('user'));
-      user.photoUrl = data.imageUrl;
+      user.photoUrl = data.photoUrl;
       localStorage.setItem('user', JSON.stringify(user));
       window.dispatchEvent(new Event('userUpdated'));
       
