@@ -158,7 +158,7 @@ function StaffRegister() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-slate-50 to-orange-50 py-12 px-6">
       <div className="max-w-4xl mx-auto">
         {/* Sticky Header */}
-        <div className="bg-white rounded-t-2xl border border-slate-200 border-b-0 px-8 py-6 sticky top-0 z-10 shadow-sm">
+        <div className="bg-white rounded-t-2xl border border-slate-200 border-b-0 px-8 py-6 shadow-sm">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg">
               <UserPlus className="w-6 h-6 text-white" />

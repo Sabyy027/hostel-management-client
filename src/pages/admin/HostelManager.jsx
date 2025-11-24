@@ -499,7 +499,7 @@ function HostelManager() {
     <AdminLayout>
       <div className="min-h-screen bg-slate-50">
         {/* Header Bar */}
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <header className="bg-white border-b border-slate-200 shadow-sm">
           <div className="flex items-center justify-between p-3 sm:p-4">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
               <div className="p-1.5 sm:p-2 bg-indigo-100 rounded-lg flex-shrink-0">

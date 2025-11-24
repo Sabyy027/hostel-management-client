@@ -226,7 +226,7 @@ function Profile() {
     <StudentLayout>
       <div className="bg-slate-50">
         {/* Header Bar */}
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+        <header className="bg-white border-b border-slate-200 shadow-sm">
           <div className="flex items-center justify-between p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-indigo-100 rounded-lg">
