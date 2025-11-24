@@ -3,7 +3,7 @@ import AdminSidebar from './AdminSidebar';
 import NotificationBell from './NotificationBell';
 import AIChatbot from './AIChatbot';
 import MobileMenu from './MobileMenu';
-import { Bell, LogOut, MoreVertical } from 'lucide-react';
+import { Bell, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const AdminLayout = ({ children }) => {
@@ -56,7 +56,7 @@ const AdminLayout = ({ children }) => {
               className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative"
               aria-label="Open menu"
             >
-              <MoreVertical size={20} />
+              <Menu size={20} />
             </button>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-800">

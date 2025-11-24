@@ -75,7 +75,7 @@ function Dashboard() {
 
           {/* Welcome Banner for Booked Students */}
           <div className="relative overflow-hidden">
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-8 rounded-xl shadow-lg">
+            <div className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 sm:p-8 rounded-xl shadow-lg">
               <div className="flex items-start justify-between relative z-10">
                 <div className="flex-1">
                   <h3 className="text-3xl font-bold mb-2 flex items-center gap-2">
@@ -280,7 +280,7 @@ function Dashboard() {
           {/* Chart Section */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 col-span-2">
              <h3 className="text-lg font-bold text-slate-800 mb-4">Room Availability Overview</h3>
-             <div className="h-64 w-full">
+             <div className="h-64 sm:h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                     <BarChart layout="vertical" data={occupancyData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" horizontal={false} />

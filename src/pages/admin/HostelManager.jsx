@@ -629,7 +629,7 @@ function HostelManager() {
               {activeBlock.floors.map(floor => (
                 <div key={floor._id} className="bg-white rounded-lg border border-slate-200 overflow-hidden">
                   {/* Floor Header */}
-                  <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border-b border-slate-200 bg-slate-50 gap-4">
                     <div className="flex items-center gap-3">
                       <div className={`p-2 rounded-lg ${
                         floor.type === 'AC' 

@@ -105,7 +105,7 @@ function MaintenanceAdmin() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
           <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
             <div className="flex items-center justify-between">
               <div>
@@ -229,7 +229,7 @@ function MaintenanceAdmin() {
         {/* Tickets List */}
         <div className="space-y-4">
           {filteredTickets.map(ticket => (
-            <div key={ticket._id} className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+            <div key={ticket._id} className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 {/* Left Section */}
                 <div className="flex-1">

@@ -223,7 +223,7 @@ function ResidentManager() {
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="hidden sm:block overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200">
@@ -371,6 +371,63 @@ function ResidentManager() {
             </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="sm:hidden space-y-4 p-4">
+            {filteredResidents.map(res => (
+              <div key={res._id} className="bg-white rounded-lg border border-slate-200 p-4 shadow-sm">
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-slate-100 rounded-lg">{getResidentIcon(res.gender)}</div>
+                    <div>
+                      <div className="font-semibold text-slate-800">{res.name}</div>
+                      <div className="text-xs text-slate-500">{res.gender || 'N/A'}</div>
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusColor(res.status)}`}>
+                    {res.status}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="bg-slate-50 p-2 rounded-lg">
+                    <div className="text-xs text-slate-500 mb-1">Room</div>
+                    <div className="font-semibold text-sm flex items-center gap-1">
+                      <Home size={14} className="text-indigo-500" />
+                      {res.room ? res.room.roomNumber : 'N/A'}
+                    </div>
+                  </div>
+                  <div className="bg-slate-50 p-2 rounded-lg">
+                    <div className="text-xs text-slate-500 mb-1">Dues</div>
+                    <div className={`font-semibold text-sm ${res.pendingDues > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                      ₹{res.pendingDues}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <button 
+                    onClick={() => setSelectedResident(res)}
+                    className="text-indigo-600 font-medium text-sm flex items-center gap-1"
+                  >
+                    <UserCheck size={16} /> Details
+                  </button>
+                  
+                  <div className="flex items-center gap-2">
+                    {res.pendingDues > 0 && (
+                      <button 
+                        onClick={() => handleSendReminder(res)}
+                        className="bg-amber-100 text-amber-700 p-2 rounded-lg text-xs font-semibold"
+                        title="Send Reminder"
+                      >
+                        <Send size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           {filteredResidents.length === 0 && residents.length > 0 && (

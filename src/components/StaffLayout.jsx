@@ -21,7 +21,7 @@ const StaffLayout = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
 
   const handleLogout = () => {
@@ -129,7 +129,7 @@ const StaffLayout = ({ children }) => {
               className="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors relative"
               aria-label="Open menu"
             >
-              <MoreVertical size={20} />
+              <Menu size={20} />
             </button>
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-slate-800">

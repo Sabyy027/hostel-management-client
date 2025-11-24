@@ -72,7 +72,7 @@ function PaymentHistory() {
         </div>
         
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <div className="hidden sm:block overflow-x-auto">
             <div className="inline-block min-w-full align-middle">
               <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
@@ -126,7 +126,52 @@ function PaymentHistory() {
               ))}
             </tbody>
               </table>
+
             </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="sm:hidden space-y-4 p-4">
+            {invoices.map(inv => (
+              <div key={inv._id} className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="text-xs text-slate-500 font-mono">{inv.invoiceId}</p>
+                    <p className="text-sm font-bold text-slate-800">{new Date(inv.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+                      inv.status === 'Paid' 
+                        ? 'bg-emerald-100 text-emerald-700' 
+                        : 'bg-red-100 text-red-700'
+                  }`}>
+                      {inv.status}
+                  </span>
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  {inv.items.map((item, i) => (
+                      <div key={i} className="font-medium text-slate-700 text-sm flex items-center gap-2">
+                        {item.description.includes('Service') ? <Wrench size={14} className="text-orange-500 flex-shrink-0" /> : 
+                         item.description.includes('Fine') ? <AlertTriangle size={14} className="text-red-500 flex-shrink-0" /> : 
+                         item.description.includes('Hostel') ? <Home size={14} className="text-indigo-500 flex-shrink-0" /> : <FileText size={14} className="text-slate-500 flex-shrink-0" />}
+                        <span className="truncate">{item.description}</span>
+                      </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-3 border-t border-slate-200">
+                  <span className="font-bold text-slate-900">₹{inv.totalAmount}</span>
+                  {inv.status === 'Paid' && (
+                    <button 
+                      onClick={() => handleDownload(inv._id)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition-colors text-xs font-medium inline-flex items-center gap-1.5 shadow-sm"
+                    >
+                      <Download size={12} /> Download PDF
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
           {invoices.length === 0 && (
             <div className="p-12 text-center">
