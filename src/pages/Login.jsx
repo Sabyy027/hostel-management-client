@@ -17,6 +17,16 @@ function Login() {
 
   const navigate = useNavigate(); // 4. Get the navigate function
 
+  // Auto-show tooltip for 20 seconds
+  useEffect(() => {
+    setShowDocTooltip(true);
+    const timer = setTimeout(() => {
+      setShowDocTooltip(false);
+    }, 20000); // Hide after 20 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
+
   // Hostel images carousel
   const hostelImages = [
     'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=800&q=80', // Modern hostel room
@@ -97,11 +107,11 @@ function Login() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 overflow-hidden">
-      {/* Documentation Download Button - Top Left */}
-      <div className="fixed top-4 left-4 z-50">
+      {/* Documentation Download Button - Top Right */}
+      <div className="fixed top-4 right-4 z-50">
         <div className="relative">
           <button
-            onClick={() => window.open(`${apiClient.defaults.baseURL}/api/documentation/download`, '_blank')}
+            onClick={() => window.open(`${apiClient.defaults.baseURL}/documentation/download`, '_blank')}
             onMouseEnter={() => setShowDocTooltip(true)}
             onMouseLeave={() => setShowDocTooltip(false)}
             className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
@@ -112,13 +122,13 @@ function Login() {
           
           {/* Tooltip */}
           {showDocTooltip && (
-            <div className="absolute top-0 left-16 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-2xl whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-200 border border-emerald-400/30">
+            <div className="absolute top-0 right-16 bg-slate-900 text-white px-4 py-3 rounded-lg shadow-2xl whitespace-nowrap animate-in fade-in slide-in-from-right-2 duration-200 border border-emerald-400/30">
               <div className="text-sm font-semibold mb-1">📄 Test Documentation</div>
               <p className="text-xs text-slate-300">
                 To test this application,<br />kindly download this documentation
               </p>
               {/* Arrow */}
-              <div className="absolute left-0 top-1/2 -translate-x-2 -translate-y-1/2 w-3 h-3 bg-slate-900 border-l border-b border-emerald-400/30 rotate-45"></div>
+              <div className="absolute right-0 top-1/2 translate-x-2 -translate-y-1/2 w-3 h-3 bg-slate-900 border-r border-t border-emerald-400/30 rotate-45"></div>
             </div>
           )}
         </div>
