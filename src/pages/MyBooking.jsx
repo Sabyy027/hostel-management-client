@@ -404,6 +404,7 @@ function MyBooking() {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState([]);
+  const [justBooked, setJustBooked] = useState(false); // New state to track if booking was just completed
   
   // User preferences
   const [preferences, setPreferences] = useState({
@@ -532,6 +533,7 @@ function MyBooking() {
             hideLoading();
             showToast("Booking Successful! Invoice sent to email.", 'success', 4000);
             setBooking(verifyRes.data.booking);
+            setJustBooked(true); // Set flag to show acknowledgement
             
             // Update localStorage to unlock dashboard access
             localStorage.setItem('hasBooking', 'true');
@@ -576,6 +578,11 @@ function MyBooking() {
 
   // View 1: Dashboard (Already Booked)
   if (booking) {
+    // Only show the acknowledgement if the user just completed the booking
+    if (!justBooked) {
+      return <Navigate to="/dashboard" replace />;
+    }
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex items-center justify-center p-6 overflow-x-hidden max-w-full">
         <div className="bg-white rounded-2xl shadow-lg p-12 max-w-md w-full text-center border border-slate-200">
@@ -662,7 +669,7 @@ function MyBooking() {
               <Building2 className="w-12 h-12 text-white" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold mb-4">
-              Welcome to HMS! 🎉
+              Welcome to HMS! 
             </h1>
             <p className="text-xl text-indigo-100 max-w-2xl mx-auto">
               Start your hostel journey by booking your perfect room and exploring our premium amenities
@@ -858,7 +865,7 @@ function MyBooking() {
                 <Users className="w-5 h-5 text-indigo-600" />
                 Room Sharing
               </label>
-              <div className="grid grid-cols-5 gap-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
                 {[1, 2, 3, 4, 5].map(capacity => (
                   <button
                     key={capacity}
