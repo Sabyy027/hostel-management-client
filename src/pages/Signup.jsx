@@ -21,6 +21,13 @@ function Signup() {
     setError(null); // Clear previous errors
     setLoading(true); // Start loading
 
+    // Validate password length
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
     // This is the data we'll send to the server
     const signupData = { username, email, password };
 
@@ -226,6 +233,7 @@ function Signup() {
                 className="w-full rounded-lg border border-slate-300 bg-white p-3 text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors"
                 placeholder="••••••••"
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
