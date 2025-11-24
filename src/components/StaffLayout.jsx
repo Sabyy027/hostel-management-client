@@ -95,28 +95,7 @@ const StaffLayout = ({ children }) => {
           </div>
         </div>
 
-        {/* User Info Footer */}
-        <div className="p-4 border-t border-slate-800 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            {user.photoUrl ? (
-              <img
-                src={user.photoUrl}
-                alt="Profile"
-                className="w-10 h-10 rounded-full object-cover border-2 border-amber-500"
-              />
-            ) : (
-              <div className="w-10 h-10 bg-amber-600 text-white rounded-full flex items-center justify-center font-bold">
-                {(user.username || 'S').charAt(0).toUpperCase()}
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-white truncate">
-                {user.username || 'Staff'}
-              </p>
-              <p className="text-xs text-slate-400">{user.designation || 'Staff Member'}</p>
-            </div>
-          </div>
-        </div>
+
       </div>
 
       {/* Main Content Area */}
