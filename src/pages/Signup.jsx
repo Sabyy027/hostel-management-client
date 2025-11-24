@@ -73,7 +73,7 @@ function Signup() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 overflow-hidden">
       {/* Left Side - Image Carousel */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-indigo-600 to-purple-700 overflow-hidden">
         {/* Animated Background Pattern */}
@@ -141,10 +141,10 @@ function Signup() {
       </div>
 
       {/* Right Side - Signup Form */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12">
+      <div className="flex-1 flex items-center justify-center px-6 py-6 lg:px-16 lg:py-12">
         <div className="w-full max-w-md">
           {/* Mobile Header */}
-          <div className="lg:hidden -mx-6 -mt-12 mb-10 bg-gradient-to-br from-indigo-600 to-purple-700 p-10 pb-20 rounded-b-[3rem] shadow-xl text-center relative overflow-hidden">
+          <div className="lg:hidden -mx-6 -mt-6 mb-6 bg-gradient-to-br from-indigo-600 to-purple-700 p-6 pb-12 rounded-b-[2.5rem] shadow-xl text-center relative overflow-hidden">
              {/* Background Pattern */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-[-50%] left-[-20%] w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
