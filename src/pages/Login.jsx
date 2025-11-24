@@ -181,12 +181,21 @@ function Login() {
       {/* Right Side - Login Form */}
       <div className="flex-1 flex items-center justify-center px-6 py-12 lg:px-16">
         <div className="w-full max-w-md">
-          {/* Logo for mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-              <Building2 className="text-indigo-600" size={32} />
+          {/* Mobile Header */}
+          <div className="lg:hidden -mx-6 -mt-12 mb-10 bg-gradient-to-br from-indigo-600 to-purple-700 p-10 pb-20 rounded-b-[3rem] shadow-xl text-center relative overflow-hidden">
+             {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute top-[-50%] left-[-20%] w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
+              <div className="absolute bottom-[-20%] right-[-20%] w-64 h-64 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
-            <h2 className="text-2xl font-bold text-slate-800">HMS</h2>
+
+            <div className="relative z-10">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl mb-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-white/20 transform hover:scale-105 transition-transform duration-300">
+                <Building2 className="text-white drop-shadow-md" size={40} />
+              </div>
+              <h2 className="text-4xl font-extrabold text-white tracking-tight drop-shadow-sm">HMS</h2>
+              <p className="text-indigo-100 text-sm font-medium mt-2 tracking-wide uppercase opacity-90">Hostel Management System</p>
+            </div>
           </div>
 
           {/* Header */}
