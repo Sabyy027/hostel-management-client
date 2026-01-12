@@ -6,6 +6,12 @@ Kindly refer the document given in the login page.
 
 <img width="1811" height="1396" alt="image" src="https://github.com/user-attachments/assets/b4f918d9-e74e-4502-bf68-4104699a3e8e" />
 
+## 🔗 Links
+- 🌐 Live Demo: https://hostel-management-system-ai.netlify.app/
+- 💻 Frontend Repo: https://github.com/Sabyy027/hostel-management-client
+- 🧠 Backend Repo: https://github.com/Sabyy027/hostel-management-server
+
+
 ## Project Overview
 The client application is built with React and Vite, providing a user interface for managing hostel operations.
 
